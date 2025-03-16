@@ -1,0 +1,6 @@
+.idea
+.vs
+x86
+x64
+*.vcxproj.user
+*.swp
