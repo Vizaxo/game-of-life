@@ -12,6 +12,7 @@ struct App {
     const LPCWCHAR class_name = TEXT("D3DWND");
 private:
     ID3D11Device* device = nullptr;
-    ID3D11DeviceContext* device_context = nullptr;
+    ID3D11DeviceContext* context = nullptr;
+    IDXGISwapChain* swapchain = nullptr;
     HWND hwnd;
 };

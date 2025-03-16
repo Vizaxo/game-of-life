@@ -34,8 +34,7 @@ HRESULT App::init(HINSTANCE hInstance, int width, int height) {
     swapchain_desc.Windowed = true;
     swapchain_desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
-    IDXGISwapChain* swapchain;
-    HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, create_flags, NULL, 0, D3D11_SDK_VERSION, &swapchain_desc, &swapchain, &device, NULL, &device_context);
+    HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, create_flags, NULL, 0, D3D11_SDK_VERSION, &swapchain_desc, &swapchain, &device, NULL, &context);
     if (FAILED(hr))
         return 0;
 }
@@ -45,6 +44,7 @@ HRESULT App::update(float dt) {
 }
 
 HRESULT App::render() {
+    swapchain->Present(0, 0);
     return 0;
     
 }
