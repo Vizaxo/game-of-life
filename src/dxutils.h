@@ -1,24 +1,20 @@
+#include <D3D11.h>
 #include <d3dcompiler.h>
+#include "common.h"
 
-#include "types.h"
+const wchar_t* SHADER_DIR = L"src/shaders";
 
-enum ShaderType {
+enum class ShaderType {
     Vertex,
     Pixel,
-}; 
+};
 
-HRESULT compile_shader(LPCWSTR src_file, LPCSTR entrypoint, ShaderType type, ID3D11Blob* blob_out) {
+inline HRESULT compile_shader(ID3D11Device* device, LPCWSTR src_file, LPCSTR entrypoint, ShaderType type, ID3DBlob** shader_blob) {
     LPCSTR target_str;
     switch (type) {
-    case Vertex:
-        target_str = "vs_5_0";
-        break;
-    case Pixel:
-        target_str = "ps_5_0";
-        break;
-    default:
-        target_str = "UNKNOWN ??";
-        break;
+    case ShaderType::Vertex:  target_str = "vs_5_0"; break;
+    case ShaderType::Pixel:   target_str = "ps_5_0"; break;
+    default:                  target_str = "UNKNOWN"; break;
     }
     u32 compile_flags = 0;
 #if _DEBUG
@@ -26,13 +22,49 @@ HRESULT compile_shader(LPCWSTR src_file, LPCSTR entrypoint, ShaderType type, ID3
     compile_flags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
     ID3DBlob* error_blob = nullptr;
-    ID3DBlob* shader_blob = nullptr;
-    HRESULT hr = D3DCompileFromFile(src_file, nullptr, nullptr, entrypoint, target_str, compile_flags, 0, shader_blob, error_blob);
+    wchar_t shader_path[MAX_PATH];
+    int ret = swprintf(shader_path, MAX_PATH, L"%s/%s", SHADER_DIR, src_file);
+    if (ret < 0 || ret >= MAX_PATH)
+        return E_FAIL;
+    
+    HRESULT hr = D3DCompileFromFile(shader_path, nullptr, nullptr, entrypoint, target_str, compile_flags, 0, shader_blob, &error_blob);
     if (FAILED(hr)) {
-        OutputDebugString((LPCWSTR)error_blob->GetBufferPointer());
-        return hr;
-    } else {
-        blob_out = shader_blob;
+        // TODO: does this error output work?
+        if (error_blob)
+            OutputDebugString((LPCWSTR)error_blob->GetBufferPointer());
+        else
+            switch (hr) {
+            case 0x80070002:
+                debug_print("Shader file not found\n");
+                goto print_dir_info;
+            case 0x80070003:
+                debug_print("Shader directory not found\n");
+            print_dir_info:
+                debug_print("Current dir:");
+                wchar_t dir[MAX_PATH];
+                GetCurrentDirectory(MAX_PATH, dir);
+                std::wcout << dir << std::endl;
+                std::wcout << shader_path << std::endl;
+                break;
+            default: debug_print("Undefined error compiling shader\n"); break;
+            }
         return hr;
     }
+    return S_OK;
+}
+
+inline HRESULT compile_pixel_shader(ID3D11Device* device, LPCWSTR src_file, LPCSTR entrypoint, ID3D11PixelShader** ps) {
+    ID3DBlob* shader_blob;
+    HRESULT hr = compile_shader(device, src_file, entrypoint, ShaderType::Pixel, &shader_blob);
+    if (!FAILED(hr))
+        hr = device->CreatePixelShader(shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), nullptr, ps);
+    return hr;
+}
+
+inline HRESULT compile_vertex_shader(ID3D11Device* device, LPCWSTR src_file, LPCSTR entrypoint, ID3D11VertexShader* ps) {
+    ID3DBlob* shader_blob;
+    HRESULT hr = compile_shader(device, src_file, entrypoint, ShaderType::Vertex, &shader_blob);
+    if (!FAILED(hr))
+        hr = device->CreateVertexShader(shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), nullptr, &ps);
+    return hr;
 }

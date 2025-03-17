@@ -11,6 +11,10 @@ struct App {
 
     const LPCWCHAR class_name = TEXT("D3DWND");
 private:
+    void register_window_class(HINSTANCE hInstance) const;
+    void create_window(HINSTANCE hInstance, int width, int height);
+    HRESULT create_device_and_swapchain(int width, int height);
+
     ID3D11Device* device = nullptr;
     ID3D11DeviceContext* context = nullptr;
     IDXGISwapChain* swapchain = nullptr;

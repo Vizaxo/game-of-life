@@ -1,6 +1,8 @@
 #include "app.h"
 
-HRESULT App::init(HINSTANCE hInstance, int width, int height) {
+#include "dxutils.h"
+
+void App::register_window_class(HINSTANCE hInstance) const {
     WNDCLASS wc {};
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = (WNDPROC)::DefWindowProcW;
@@ -8,11 +10,15 @@ HRESULT App::init(HINSTANCE hInstance, int width, int height) {
     wc.lpszClassName = class_name;
 
     RegisterClass(&wc);
+}
 
+void App::create_window(HINSTANCE hInstance, int width, int height) {
     hwnd = CreateWindow(class_name, TEXT("RTS Game"), WS_EX_TOPMOST, 0, 0, width, height, 0, 0, hInstance, NULL);
     ShowWindow(hwnd, SW_SHOW);
     UpdateWindow(hwnd);
+}
 
+HRESULT App::create_device_and_swapchain(int width, int height) {
     u32 create_flags = 0;
 #if _DEBUG
     create_flags |= D3D11_CREATE_DEVICE_DEBUG;
@@ -34,9 +40,24 @@ HRESULT App::init(HINSTANCE hInstance, int width, int height) {
     swapchain_desc.Windowed = true;
     swapchain_desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
-    HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, create_flags, NULL, 0, D3D11_SDK_VERSION, &swapchain_desc, &swapchain, &device, NULL, &context);
+    HRESULT hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, create_flags, nullptr, 0, D3D11_SDK_VERSION, &swapchain_desc, &swapchain, &device, nullptr, &context);
+    return hr;
+}
+
+HRESULT App::init(HINSTANCE hInstance, int width, int height) {
+    register_window_class(hInstance);
+    
+    create_window(hInstance, width, height);
+
+    HRESULT hr = create_device_and_swapchain(width, height);
     if (FAILED(hr))
-        return 0;
+        return hr;
+
+    ID3D11PixelShader *ps= nullptr;
+    hr = compile_pixel_shader(device, L"shader_file.hlsl", "main_ps", &ps);
+    if (FAILED(hr))
+        return hr;
+    return 0;
 }
 
 HRESULT App::update(float dt) {
