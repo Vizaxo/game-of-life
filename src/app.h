@@ -1,5 +1,3 @@
-#include <Windows.h>
-#include <D3D11.h>
 #include "common.h"
 
 struct App {

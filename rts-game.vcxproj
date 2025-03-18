@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="src\app.cpp" />
     <None Include="src\shaders\shader_file.hlsl" />
+    <ClCompile Include="src\heightmap.cpp" />
     <ClCompile Include="src\winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +151,8 @@
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\debug.h" />
     <ClInclude Include="src\dxutils.h" />
+    <ClInclude Include="src\heightmap.h" />
+    <ClInclude Include="src\intpoint.h" />
     <ClInclude Include="src\types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
