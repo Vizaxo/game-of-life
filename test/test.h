@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 struct TestResult {
 	enum Res {
 		PASSED,
@@ -14,22 +16,28 @@ struct Test {
 	TestResult (*test_function)();
 };
 
-inline TestResult _test_success_fn() {
-	return {TestResult::PASSED, nullptr};
-}
-inline struct Test test_success = {
-	"Test test success",
-	"This is a test to test tests. it should succeed",
-	&_test_success_fn,
+inline std::vector<Test*> tests = {};
+class TestAllocator {
+public:
+	TestAllocator(Test* test) {
+		tests.push_back(test);
+	}
 };
 
-inline TestResult _test_fail_fn() {
-	return {TestResult::FAILED, "intentional failure"};
-}
-inline struct Test test_fail = {
-	"Test test fail",
-	"This is a test to test tests. it should fail",
-	&_test_fail_fn,
-};
+#define DEFTEST(name, desc, fn)\
+	inline struct Test _ts_##fn = {\
+		#name,\
+		#desc,\
+		&fn,\
+	};\
+	inline static TestAllocator _ta_##fn(&_ts_##fn);
 
-//#define IMPL_TEST(name, desc, body) 
+TestResult test_fail() {
+	return {TestResult::FAILED, "intentional"};
+}
+//DEFTEST("Intentional failure", "Designed to fail intentionally", test_fail);
+
+TestResult test_success() {
+	return {TestResult::PASSED};
+}
+DEFTEST("Intentional success", "Designed to succeed intentionally", test_success);

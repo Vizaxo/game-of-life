@@ -1,7 +1,6 @@
 #pragma once
 
 #include "test.h"
-#include <vector>
 
 #include "common.h"
 #include "debug.h"
@@ -30,12 +29,12 @@ inline TestResult execute_test(Test test) {
 	return res;
 }
 
-inline void execute_tests(std::vector<Test> &tests) {
+inline void execute_tests(std::vector<Test*> &tests) {
 	int total_tests = 0;
 	int passes = 0;
-	for (Test& test: tests) {
+	for (Test* test: tests) {
 		++total_tests;
-		if (execute_test(test).res == TestResult::PASSED)
+		if (execute_test(*test).res == TestResult::PASSED)
 			++passes;
 	}
 	char buf[1024];
@@ -51,6 +50,6 @@ inline void execute_tests(std::vector<Test> &tests) {
 }
 
 inline void test_main() {
-	std::vector<Test> tests = {test_success, test_fail};
+	//std::vector<Test> tests = {test_success, test_fail};
 	execute_tests(tests);
 }
