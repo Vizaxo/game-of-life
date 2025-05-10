@@ -2,7 +2,14 @@
 
 #include "app.h"
 
+#define _TEST
+#include "../test/test_main.h"
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+#ifdef _TEST
+    test_main();
+
+#else
     App app;
 
     if (FAILED(app.init(hInstance, 640, 480)))
@@ -29,4 +36,5 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     app.cleanup();
 
     return msg.wParam;
+#endif
 }
