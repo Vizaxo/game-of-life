@@ -3,10 +3,20 @@
 
 #include "dxutils.h"
 
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    switch (msg) {
+    case WM_CLOSE:
+        PostQuitMessage(0);
+        return 0;
+    }
+
+    return DefWindowProc(hwnd, msg, wParam, lParam);
+}
+
 void App::register_window_class(HINSTANCE hInstance) const {
     WNDCLASS wc {};
     wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = (WNDPROC)::DefWindowProcW;
+    wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
     wc.lpszClassName = class_name;
 
@@ -14,7 +24,7 @@ void App::register_window_class(HINSTANCE hInstance) const {
 }
 
 void App::create_window(HINSTANCE hInstance, int width, int height) {
-    hwnd = CreateWindow(class_name, TEXT("RTS Game"), WS_EX_TOPMOST, 0, 0, width, height, 0, 0, hInstance, NULL);
+    hwnd = CreateWindow(class_name, TEXT("RTS Game"), WS_SYSMENU, 0, 0, width, height, 0, 0, hInstance, NULL);
     ShowWindow(hwnd, SW_SHOW);
     UpdateWindow(hwnd);
 }
