@@ -35,6 +35,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="test\shaders\test_failure.hlsl" />
-    <None Include="test\shaders\test_success.hlsl" />
+    <None Include="test\shaders\test_success_ps.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="test\shaders\test_success_vs.hlsl" />
   </ItemGroup>
 </Project>

@@ -28,10 +28,20 @@ TestResult test_shader_comp_illegal_shader() {
 }
 DEFTEST("compiling illegal shader", "compiling an illegal shader gives an error", test_shader_comp_illegal_shader);
 
-TestResult test_shader_comp_success() {
+TestResult test_ps_shader_comp_success() {
 	ID3DBlob* shader_blob;
-	HRESULT hr = compile_shader(L"test_success.hlsl", "main", ShaderType::Pixel, &shader_blob);
+	HRESULT hr = compile_shader(L"test_success_ps.hlsl", "main", ShaderType::Pixel, &shader_blob);
 	assert_equal(hr, S_OK);
+	assert_not_equal(shader_blob, nullptr);
 	test_return();
 }
-DEFTEST("shader compilation success", "compiling a legal shader does not give an error", test_shader_comp_success);
+DEFTEST("pixel shader compilation success", "compiling a legal pixel shader does not give an error", test_ps_shader_comp_success);
+
+TestResult test_vs_shader_comp_success() {
+	ID3DBlob* shader_blob;
+	HRESULT hr = compile_shader(L"test_success_vs.hlsl", "main", ShaderType::Vertex, &shader_blob);
+	assert_equal(hr, S_OK);
+	assert_not_equal(shader_blob, nullptr);
+	test_return();
+}
+DEFTEST("vertex shader compilation success", "compiling a legal vertex shader does not give an error", test_vs_shader_comp_success);
