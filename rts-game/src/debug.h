@@ -15,12 +15,20 @@ inline void action_log_level(LogLevel lvl) {
     switch (lvl) {
     case LogLevel::PRINT:
         return;
+#ifdef _TEST
+    case LogLevel::BREAK_IF_DEBUGGING:
+    case LogLevel::FATAL:
+        extern int fatal_log_hit;
+        ++fatal_log_hit;
+        return;
+#else
     case LogLevel::BREAK_IF_DEBUGGING:
         DebugBreak();
         return;
     case LogLevel::FATAL:
         DebugBreak();
         exit(1);
+#endif
     default:
         assert(false);
         return;

@@ -2,14 +2,18 @@
 #include <d3dcompiler.h>
 #include "common.h"
 
+#ifdef _TEST
+const wchar_t* SHADER_DIR = L"../rts-test/test/shaders";
+#else
 const wchar_t* SHADER_DIR = L"../rts-game/src/shaders"; // TODO: properly set this for packaged builds
+#endif
 
 enum class ShaderType {
     Vertex,
     Pixel,
 };
 
-inline HRESULT compile_shader(ID3D11Device* device, LPCWSTR src_file, LPCSTR entrypoint, ShaderType type, ID3DBlob** shader_blob) {
+inline HRESULT compile_shader(LPCWSTR src_file, LPCSTR entrypoint, ShaderType type, ID3DBlob** shader_blob) {
     LPCSTR target_str;
     switch (type) {
     case ShaderType::Vertex:  target_str = "vs_5_0"; break;
@@ -58,7 +62,7 @@ inline HRESULT compile_shader(ID3D11Device* device, LPCWSTR src_file, LPCSTR ent
 
 inline HRESULT compile_pixel_shader(ID3D11Device* device, LPCWSTR src_file, LPCSTR entrypoint, ID3D11PixelShader** ps) {
     ID3DBlob* shader_blob;
-    HRESULT hr = compile_shader(device, src_file, entrypoint, ShaderType::Pixel, &shader_blob);
+    HRESULT hr = compile_shader(src_file, entrypoint, ShaderType::Pixel, &shader_blob);
     if (!FAILED(hr))
         hr = device->CreatePixelShader(shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), nullptr, ps);
     return hr;
@@ -66,7 +70,7 @@ inline HRESULT compile_pixel_shader(ID3D11Device* device, LPCWSTR src_file, LPCS
 
 inline HRESULT compile_vertex_shader(ID3D11Device* device, LPCWSTR src_file, LPCSTR entrypoint, ID3D11VertexShader* ps) {
     ID3DBlob* shader_blob;
-    HRESULT hr = compile_shader(device, src_file, entrypoint, ShaderType::Vertex, &shader_blob);
+    HRESULT hr = compile_shader(src_file, entrypoint, ShaderType::Vertex, &shader_blob);
     if (!FAILED(hr))
         hr = device->CreateVertexShader(shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), nullptr, &ps);
     return hr;

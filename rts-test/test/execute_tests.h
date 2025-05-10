@@ -7,7 +7,7 @@
 // TODO: move to separate test project
 
 inline void test_print(const char* str) {
-	OutputDebugStringA(str);
+	std::cout << str;
 }
 
 inline TestResult execute_test(Test test) {
@@ -33,6 +33,7 @@ inline void execute_tests(std::vector<Test*> &tests) {
 	int passes = 0;
 	for (Test* test: tests) {
 		++total_tests;
+		reset_test_env();
 		if (execute_test(*test).res == TestResult::PASSED)
 			++passes;
 	}
