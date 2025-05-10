@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="src\app.cpp" />
     <ClCompile Include="src\renderer\renderer.cpp" />
+    <ClCompile Include="src\renderer\render_text.cpp" />
     <None Include="src\shaders\shader_file.hlsl" />
     <ClCompile Include="src\heightmap.cpp" />
   </ItemGroup>

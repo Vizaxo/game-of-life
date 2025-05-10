@@ -1,4 +1,6 @@
 #pragma once
 
-#include "SpriteBatch.h"
-#include "SpriteFont.h"
+#include "common.h"
+
+void load_font();
+void draw_debug_text(const wchar_t* str);

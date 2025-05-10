@@ -13,3 +13,5 @@
 using namespace DirectX;
 
 static constexpr float PI = 3.141592f;
+
+#include <memory>

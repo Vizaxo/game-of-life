@@ -1,10 +1,19 @@
 #include "renderer.h"
 
 #include "app.h"
+#include "render_text.h"
 
 ID3D11Device* device;
 ID3D11DeviceContext* context;
 IDXGISwapChain* swapchain;
+
+void renderer_init(App &app) {
+	device = app.device;
+	context = app.context;
+	swapchain = app.swapchain;
+
+	load_font();
+}
 
 ID3D11RenderTargetView* get_backbuffer_rtv() {
 	DXGI_SWAP_CHAIN_DESC sc_desc;
@@ -23,14 +32,26 @@ ID3D11RenderTargetView* get_backbuffer_rtv() {
 	return backbuffer_rtv;
 }
 
-HRESULT render(App &app) {
-	device = app.device;
-	context = app.context;
-	swapchain = app.swapchain;
+void set_viewport() {
+	D3D11_VIEWPORT viewport;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = 640;
+	viewport.Height = 480;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	context->RSSetViewports(1, &viewport);
+}
 
+HRESULT render() {
 	ID3D11RenderTargetView* backbuffer_rtv = get_backbuffer_rtv();
 
 	context->ClearRenderTargetView(backbuffer_rtv, Colors::Aqua);
+
+	set_viewport();
+	context->OMSetRenderTargets(1, &backbuffer_rtv, nullptr);
+
+	draw_debug_text(L"Hello, world");
 
 	swapchain->Present(0, 0);
 

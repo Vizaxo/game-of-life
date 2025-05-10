@@ -65,6 +65,8 @@ HRESULT App::init(HINSTANCE hInstance, int width, int height) {
     if (FAILED(hr))
         return hr;
 
+    renderer_init(*this);
+
     return S_OK;
 }
 
@@ -73,7 +75,7 @@ HRESULT App::update(float dt) {
 }
 
 HRESULT App::render() {
-    return ::render(*this);
+    return ::render();
 }
 
 HRESULT App::cleanup() {
