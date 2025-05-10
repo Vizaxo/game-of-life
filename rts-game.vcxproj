@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\app.cpp" />
+    <ClInclude Include="test\execute_tests.h" />
     <ClInclude Include="test\test_main.h">
       <FileType>CppClass</FileType>
     </ClInclude>
