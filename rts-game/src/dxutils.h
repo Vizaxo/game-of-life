@@ -2,7 +2,7 @@
 #include <d3dcompiler.h>
 #include "common.h"
 
-const wchar_t* SHADER_DIR = L"src/shaders";
+const wchar_t* SHADER_DIR = L"../rts-game/src/shaders"; // TODO: properly set this for packaged builds
 
 enum class ShaderType {
     Vertex,
@@ -36,16 +36,17 @@ inline HRESULT compile_shader(ID3D11Device* device, LPCWSTR src_file, LPCSTR ent
         } else {
             switch (hr) {
             case 0x80070002:
-                debug_print(LogLevel::FATAL, "Shader file not found\n");
+                debug_print(LogLevel::PRINT, "Shader file not found");
                 goto print_dir_info;
             case 0x80070003:
-                debug_print(LogLevel::FATAL, "Shader directory not found\n");
+                debug_print(LogLevel::PRINT, "Shader directory not found");
             print_dir_info:
                 debug_print(LogLevel::PRINT, "Current dir:");
                 wchar_t dir[MAX_PATH];
                 GetCurrentDirectory(MAX_PATH, dir);
-                std::wcout << dir << std::endl;
-                std::wcout << shader_path << std::endl;
+                debug_print(LogLevel::PRINT, dir);
+                debug_print(LogLevel::PRINT, shader_path);
+                debug_print(LogLevel::FATAL, "Failed to compile shader");
                 break;
             default: debug_print(LogLevel::FATAL, "Undefined error compiling shader\n"); break;
             }

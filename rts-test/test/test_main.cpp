@@ -2,6 +2,7 @@
 
 #include "execute_tests.h"
 
-inline void test_main() {
+int main()
+{
 	execute_tests(tests);
 }

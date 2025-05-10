@@ -1,9 +1,0 @@
-﻿  app.cpp
-F:\programming\games\rts-game\rts-game\src\common.h(15,37): warning C4305: 'initializing': truncation from 'double' to 'const float'
-  heightmap.cpp
-F:\programming\games\rts-game\rts-game\src\common.h(15,37): warning C4305: 'initializing': truncation from 'double' to 'const float'
-F:\programming\games\rts-game\rts-game\src\heightmap.cpp(40,28): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-F:\programming\games\rts-game\rts-game\src\heightmap.cpp(41,27): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  winmain.cpp
-F:\programming\games\rts-game\rts-game\src\common.h(15,37): warning C4305: 'initializing': truncation from 'double' to 'const float'
-  Generating Code...

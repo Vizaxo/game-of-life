@@ -1,5 +1,6 @@
 #include "app.h"
 
+
 #include "dxutils.h"
 
 void App::register_window_class(HINSTANCE hInstance) const {

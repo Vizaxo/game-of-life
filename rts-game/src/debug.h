@@ -29,10 +29,12 @@ inline void action_log_level(LogLevel lvl) {
 
 inline void debug_print(LogLevel lvl, const char* str) {
     OutputDebugStringA(str);
+    OutputDebugStringA("\n");
     action_log_level(lvl);
 }
 
 inline void debug_print(LogLevel lvl, const wchar_t* str) {
     OutputDebugStringW(str);
+    OutputDebugStringW(L"\n");
     action_log_level(lvl);
 }
