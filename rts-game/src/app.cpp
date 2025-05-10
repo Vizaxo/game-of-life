@@ -69,10 +69,8 @@ HRESULT App::render() {
 
 HRESULT App::cleanup() {
     return 0;
-    
 }
 
 HRESULT App::quit() {
     return 0;
-    
 }
