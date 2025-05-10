@@ -30,9 +30,10 @@ inline HRESULT compile_shader(ID3D11Device* device, LPCWSTR src_file, LPCSTR ent
     HRESULT hr = D3DCompileFromFile(shader_path, nullptr, nullptr, entrypoint, target_str, compile_flags, 0, shader_blob, &error_blob);
     if (FAILED(hr)) {
         // TODO: does this error output work?
-        if (error_blob)
-            OutputDebugString((LPCWSTR)error_blob->GetBufferPointer());
-        else
+        if (error_blob) {
+            OutputDebugStringA((LPCSTR)error_blob->GetBufferPointer());
+            error_blob->Release();
+        } else {
             switch (hr) {
             case 0x80070002:
                 debug_print("Shader file not found\n");
@@ -48,6 +49,7 @@ inline HRESULT compile_shader(ID3D11Device* device, LPCWSTR src_file, LPCSTR ent
                 break;
             default: debug_print("Undefined error compiling shader\n"); break;
             }
+        }
         return hr;
     }
     return S_OK;
