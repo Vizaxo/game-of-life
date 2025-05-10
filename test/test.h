@@ -35,7 +35,7 @@ public:
 TestResult test_fail() {
 	return {TestResult::FAILED, "intentional"};
 }
-//DEFTEST("Intentional failure", "Designed to fail intentionally", test_fail);
+DEFTEST("Intentional failure", "Designed to fail intentionally", test_fail);
 
 TestResult test_success() {
 	return {TestResult::PASSED};
