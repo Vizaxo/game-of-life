@@ -28,5 +28,5 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     app.cleanup();
 
-    return msg.wParam;
+    return (int)msg.wParam;
 }
