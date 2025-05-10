@@ -30,8 +30,7 @@ HRESULT render(App &app) {
 
 	ID3D11RenderTargetView* backbuffer_rtv = get_backbuffer_rtv();
 
-	float green[4] = {0.0, 1.0f, 0.0, 1.0};
-	context->ClearRenderTargetView(backbuffer_rtv, green);
+	context->ClearRenderTargetView(backbuffer_rtv, Colors::Aqua);
 
 	swapchain->Present(0, 0);
 
