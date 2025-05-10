@@ -11,6 +11,7 @@ inline void test_print(const char* str) {
 }
 
 inline TestResult execute_test(Test test) {
+	assert(test.test_function);
 	TestResult res = test.test_function();
 	char buf[1024];
 	switch (res.res) {

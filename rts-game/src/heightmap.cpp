@@ -37,8 +37,8 @@ HRESULT Heightmap::create_random_heightmap(int seed, float noise_size, float per
 
             float height = 0;
             for (int oct=0; oct<octaves; ++oct) {
-                float freq = pow(2, oct);
-                float amp = pow(persistence, oct);
+                float freq = (float)pow(2.0f, oct);
+                float amp = (float)pow(persistence, oct);
 
                 float tx = xf * freq;
                 float ty = yf * freq;

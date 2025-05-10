@@ -12,4 +12,4 @@
 #include "DirectXColors.h"
 using namespace DirectX;
 
-static constexpr float PI = 3.141592;
+static constexpr float PI = 3.141592f;

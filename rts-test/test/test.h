@@ -36,21 +36,34 @@ public:
 	};\
 	inline TestAllocator _ta_##fn(&_ts_##fn);
 
-#define assert_equal(a, b) do{\
-	if (!(a == b)) {\
-		return {TestResult::FAILED, #a##" does not equal "## #b##", but it should"};\
+
+// opposite of __VA_ARGS__
+#define VALUE_IFNOT_TEST(...) __VA_ARGS__
+#define VALUE_IFNOT_TEST0(...) __VA_ARGS__
+#define VALUE_IFNOT_TEST1(...)
+#define VALUE_IFNOT(COND, ...) VALUE_IFNOT_TEST ## COND ( __VA_ARGS__ )
+
+// VALUE_IFNOT(__VA_OPT(1), "%d") __VA_ARGS__ will expand to %d as a default if no fmt is provided
+// __VA_OPT__ requires C++20 and /Zc:preprocessor if MSVC
+#define assert_equal(a, b, ...) do{\
+	decltype(a) _a_res = a;\
+	decltype(b) _b_res = b;\
+	if (!(_a_res == b)) {\
+		char buf[1024];\
+		snprintf(buf, 1024, #a " (" VALUE_IFNOT(__VA_OPT__(1), "%d") __VA_ARGS__ ") does not equal " #b " (" VALUE_IFNOT(__VA_OPT__(1), "%d") __VA_ARGS__ "), but it should", _a_res, _b_res);\
+		return {TestResult::FAILED, buf};\
 	}\
 }while(0);
 
 #define assert_not_equal(a, b) do{\
 	if (!(a != b)) {\
-		return {TestResult::FAILED, #a##" equals "## #b##", but it shouldn't"};\
+		return {TestResult::FAILED, #a " equals " #b ", but it shouldn't"};\
 	}\
 }while(0);
 
 #define assert_greater(a, b) do{\
 	if (!(a > b)) {\
-		return {TestResult::FAILED, #a##" is not greater than "## #b};\
+		return {TestResult::FAILED, #a " is not greater than " #b};\
 	}\
 }while(0);
 

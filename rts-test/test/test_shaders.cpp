@@ -10,7 +10,7 @@ TestResult test_shader_comp_file_not_found() {
 	HRESULT expected = hr_file_not_found;
 	assert_equal(hr, expected);
 	assert_fatal_log_hit();
-	assert_equal(shader_blob, nullptr);
+	assert_equal(shader_blob, nullptr, "%p");
 	test_return();
 }
 DEFTEST("shader file not found", "shader compilation fails when file is not found", test_shader_comp_file_not_found);
@@ -21,8 +21,8 @@ TestResult test_shader_comp_illegal_shader() {
 	assert_not_equal(hr, hr_file_not_found);
 	assert_not_equal(hr, hr_dir_not_found);
 	assert_not_equal(hr, S_OK);
-	assert_equal(hr, E_FAIL);
-	assert_equal(shader_blob, nullptr);
+	assert_equal(hr, E_FAIL, "%d");
+	assert_equal(shader_blob, nullptr, "%p");
 	assert_fatal_log_hit();
 	test_return();
 }

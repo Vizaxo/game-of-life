@@ -54,11 +54,7 @@ HRESULT App::init(HINSTANCE hInstance, int width, int height) {
     if (FAILED(hr))
         return hr;
 
-    ID3D11PixelShader *ps= nullptr;
-    hr = compile_pixel_shader(device, L"shader_file.hlsl", "main_ps", &ps);
-    if (FAILED(hr))
-        return hr;
-    return 0;
+    return S_OK;
 }
 
 HRESULT App::update(float dt) {

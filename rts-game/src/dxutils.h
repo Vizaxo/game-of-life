@@ -3,9 +3,9 @@
 #include "common.h"
 
 #ifdef _TEST
-const wchar_t* SHADER_DIR = L"../rts-test/test/shaders";
+inline const wchar_t* SHADER_DIR = L"../rts-test/test/shaders";
 #else
-const wchar_t* SHADER_DIR = L"../rts-game/src/shaders"; // TODO: properly set this for packaged builds
+inline const wchar_t* SHADER_DIR = L"../rts-game/src/shaders"; // TODO: properly set this for packaged builds
 #endif
 
 enum class ShaderType {
