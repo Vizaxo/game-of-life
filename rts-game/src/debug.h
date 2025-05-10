@@ -46,3 +46,8 @@ inline void debug_print(LogLevel lvl, const wchar_t* str) {
     OutputDebugStringW(L"\n");
     action_log_level(lvl);
 }
+
+#define HRASSERT(hr) do{\
+    if (FAILED(hr))\
+        debug_print(LogLevel::BREAK_IF_DEBUGGING, "HRESULT failed");\
+}while(0)

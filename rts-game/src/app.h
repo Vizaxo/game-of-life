@@ -1,3 +1,5 @@
+#pragma once
+
 #include "common.h"
 
 struct App {
@@ -8,7 +10,7 @@ struct App {
     HRESULT quit();
 
     const LPCWCHAR class_name = TEXT("D3DWND");
-private:
+
     void register_window_class(HINSTANCE hInstance) const;
     void create_window(HINSTANCE hInstance, int width, int height);
     HRESULT create_device_and_swapchain(int width, int height);

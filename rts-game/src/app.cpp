@@ -1,5 +1,6 @@
 #include "app.h"
 
+#include "renderer/renderer.h"
 
 #include "dxutils.h"
 
@@ -72,9 +73,7 @@ HRESULT App::update(float dt) {
 }
 
 HRESULT App::render() {
-    swapchain->Present(0, 0);
-    return 0;
-    
+    return ::render(*this);
 }
 
 HRESULT App::cleanup() {
