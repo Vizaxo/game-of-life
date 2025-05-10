@@ -31,23 +31,23 @@ inline HRESULT compile_shader(ID3D11Device* device, LPCWSTR src_file, LPCSTR ent
     if (FAILED(hr)) {
         // TODO: does this error output work?
         if (error_blob) {
-            OutputDebugStringA((LPCSTR)error_blob->GetBufferPointer());
+            debug_print(LogLevel::FATAL, (LPCSTR)error_blob->GetBufferPointer());
             error_blob->Release();
         } else {
             switch (hr) {
             case 0x80070002:
-                debug_print("Shader file not found\n");
+                debug_print(LogLevel::FATAL, "Shader file not found\n");
                 goto print_dir_info;
             case 0x80070003:
-                debug_print("Shader directory not found\n");
+                debug_print(LogLevel::FATAL, "Shader directory not found\n");
             print_dir_info:
-                debug_print("Current dir:");
+                debug_print(LogLevel::PRINT, "Current dir:");
                 wchar_t dir[MAX_PATH];
                 GetCurrentDirectory(MAX_PATH, dir);
                 std::wcout << dir << std::endl;
                 std::wcout << shader_path << std::endl;
                 break;
-            default: debug_print("Undefined error compiling shader\n"); break;
+            default: debug_print(LogLevel::FATAL, "Undefined error compiling shader\n"); break;
             }
         }
         return hr;
