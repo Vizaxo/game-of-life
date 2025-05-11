@@ -8,7 +8,7 @@
 struct TerrainVert {
     XMFLOAT3 pos;
     XMFLOAT3 normal;
-    XMFLOAT4 color;
+    XMFLOAT2 uv;
 };
 
 struct Patch {

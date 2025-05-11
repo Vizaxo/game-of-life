@@ -32,7 +32,7 @@ inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device)
                 TerrainVert& vert = verts[x + y*(width+1)];
                 vert.pos = XMFLOAT3((float)x, (float)y, hm.get_height({src.left + x, src.top + y}));
                 vert.normal = XMFLOAT3(0.0, 1.0, 0.0); // TODO: calc normals
-                XMStoreFloat4(&vert.color, Colors::Green);
+                vert.uv = XMFLOAT2((float)(x + src.left) / (float)hm.size.x, (float)(y + src.top) / (float)hm.size.y);
             }
         }
     
@@ -148,7 +148,7 @@ void Terrain::create_patches(int num_patches) {
     D3D11_INPUT_ELEMENT_DESC input_layout_desc[] = {
         {"SV_POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
         {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
     HRASSERT(device->CreateInputLayout(input_layout_desc, NUM_ELEMENTS(input_layout_desc), Patch::vs_bytecode->GetBufferPointer(), Patch::vs_bytecode->GetBufferSize(), &input_layout));
     assert(input_layout);
