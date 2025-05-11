@@ -48,6 +48,9 @@ inline void debug_print(LogLevel lvl, const wchar_t* str) {
 }
 
 #define HRASSERT(hr) do{\
-    if (FAILED(hr))\
-        debug_print(LogLevel::BREAK_IF_DEBUGGING, "HRESULT failed");\
+    if (FAILED(hr)) {\
+        char buf[1024];\
+        snprintf(buf, 1024, "HRESULT failed with code %x", hr);\
+        debug_print(LogLevel::BREAK_IF_DEBUGGING, buf);\
+    }\
 }while(0)

@@ -1,6 +1,7 @@
 #include "terrain_mesh.h"
 
 #include <vector>
+#include <WICTextureLoader.h>
 
 #include "dxutils.h"
 #include "renderer/renderer.h"
@@ -152,10 +153,23 @@ void Terrain::create_patches(int num_patches) {
     };
     HRASSERT(device->CreateInputLayout(input_layout_desc, NUM_ELEMENTS(input_layout_desc), Patch::vs_bytecode->GetBufferPointer(), Patch::vs_bytecode->GetBufferSize(), &input_layout));
     assert(input_layout);
+
+    HRASSERT(CreateWICTextureFromFile(device, context, L"../resources/textures/grass.jpg", nullptr, &terrain_texture_srv));
 }
 
 void Terrain::render() {
     context->IASetInputLayout(input_layout);
+    context->PSSetShaderResources(0, 1, &terrain_texture_srv);
+
+    // TODO: fix resource leak
+    ID3D11SamplerState* bilinear_sampler;
+    D3D11_SAMPLER_DESC sampler_desc {};
+    sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	HRASSERT(device->CreateSamplerState(&sampler_desc, &bilinear_sampler));
+    context->PSSetSamplers(0, 1, &bilinear_sampler);
     // TODO: separate patches, separate positions
     for (Patch& patch : patches)
 		patch.render();

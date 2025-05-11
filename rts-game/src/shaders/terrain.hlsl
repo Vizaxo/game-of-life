@@ -9,6 +9,9 @@ struct VSOut {
 	float2 uv : TEXCOORD;
 };
 
+Texture2D terrain_tex : register(t0);
+SamplerState bilinear : register(s0);
+
 VSOut main_vs(in TerrainVert vert) {
 	VSOut ret;
 	ret.pos = float4(vert.pos, 1.0f);
@@ -17,5 +20,5 @@ VSOut main_vs(in TerrainVert vert) {
 }
 
 float4 main_ps(in VSOut data) : SV_Target {
-	return float4(data.uv, 0.f, 1.f);
+	return terrain_tex.Sample(bilinear, data.uv);
 }

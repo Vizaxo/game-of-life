@@ -1,5 +1,8 @@
 #include "renderer.h"
 
+#include <wrl/wrappers/corewrappers.h>
+#include <WICTextureLoader.h>
+
 #include "app.h"
 #include "render_text.h"
 #include "terrain_mesh.h"
@@ -8,6 +11,8 @@ ID3D11Device* device;
 ID3D11DeviceContext* context;
 IDXGISwapChain* swapchain;
 Terrain terrain({100, 100});
+
+Microsoft::WRL::Wrappers::RoInitializeWrapper* initialize;
 
 void renderer_init(App &app) {
 	device = app.device;
@@ -18,6 +23,17 @@ void renderer_init(App &app) {
 	Patch::setup_patches(device);
 	terrain.generate_random_terrain(550465, 1);
 	terrain.create_patches(5);
+
+	// Initialise Windows Imaging Component for DirectXTK texture loading
+#if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
+    initialize = new Microsoft::WRL::Wrappers::RoInitializeWrapper(RO_INIT_MULTITHREADED);
+    if (FAILED(*initialize))
+		debug_print(LogLevel::FATAL, "Could not initialise WIC");
+#else
+    HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+    if (FAILED(hr))
+		debug_print(LogLevel::FATAL, "Could not initialise WIC");
+#endif
 }
 
 ID3D11RenderTargetView* get_backbuffer_rtv() {
