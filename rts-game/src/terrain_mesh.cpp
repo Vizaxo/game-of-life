@@ -154,12 +154,16 @@ void Terrain::create_patches(int num_patches) {
     HRASSERT(device->CreateInputLayout(input_layout_desc, NUM_ELEMENTS(input_layout_desc), Patch::vs_bytecode->GetBufferPointer(), Patch::vs_bytecode->GetBufferSize(), &input_layout));
     assert(input_layout);
 
-    HRASSERT(CreateWICTextureFromFile(device, context, L"../resources/textures/grass.jpg", nullptr, &terrain_texture_srv));
+    HRASSERT(CreateWICTextureFromFile(device, context, L"../resources/textures/grass.jpg", nullptr, &grass_srv));
+    HRASSERT(CreateWICTextureFromFile(device, context, L"../resources/textures/water.jpg", nullptr, &water_srv));
+    HRASSERT(CreateWICTextureFromFile(device, context, L"../resources/textures/stone.jpg", nullptr, &stone_srv));
 }
 
 void Terrain::render() {
     context->IASetInputLayout(input_layout);
-    context->PSSetShaderResources(0, 1, &terrain_texture_srv);
+    context->PSSetShaderResources(0, 1, &grass_srv);
+    context->PSSetShaderResources(1, 1, &water_srv);
+    context->PSSetShaderResources(2, 1, &stone_srv);
 
     // TODO: fix resource leak
     ID3D11SamplerState* bilinear_sampler;

@@ -33,7 +33,9 @@ struct Terrain {
     void create_patches(int num_patches);
     void render();
 
-    ID3D11ShaderResourceView* terrain_texture_srv;
+    ID3D11ShaderResourceView* grass_srv;
+    ID3D11ShaderResourceView* water_srv;
+    ID3D11ShaderResourceView* stone_srv;
     ID3D11InputLayout* input_layout;
     IntPoint size;
     Heightmap heightmap;
