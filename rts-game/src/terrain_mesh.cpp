@@ -3,11 +3,16 @@
 #include <vector>
 
 #include "dxutils.h"
+#include "renderer/renderer.h"
 
-inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device, int index) {
+// Patches
+
+inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device) {
     int width = src.right - src.left;
     int height = src.bottom - src.top;
-    int num_vertices = (width+1) * (height+1);
+    size.x = width;
+    size.y = height;
+    num_vertices = (width+1) * (height+1);
     int num_triangles = width * height * 2;
 
     // Create vertex buffer
@@ -21,11 +26,11 @@ inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device,
         bd.StructureByteStride = sizeof(TerrainVert);
 
         std::vector<TerrainVert> verts;
-        verts.reserve(num_vertices);
+        verts.resize(num_vertices);
         for (int x = 0; x <= width; x++) {
             for (int y = 0; y <= height; y++) {
                 TerrainVert& vert = verts[x + y*(width+1)];
-                vert.pos = XMFLOAT3((float)x, (float)y, hm.get_height({x, y}));
+                vert.pos = XMFLOAT3((float)x, (float)y, 0.0f); // TODO: put heightmap height back hm.get_height({x, y}));
                 vert.normal = XMFLOAT3(0.0, 1.0, 0.0); // TODO: calc normals
                 XMStoreFloat4(&vert.color, Colors::Green);
             }
@@ -33,6 +38,7 @@ inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device,
     
         D3D11_SUBRESOURCE_DATA vert_data {};
         vert_data.pSysMem = verts.data();
+        vert_data.SysMemPitch = sizeof(TerrainVert);
         device->CreateBuffer(&bd, &vert_data, &vb);
     }
 
@@ -48,9 +54,9 @@ inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device,
         bd.StructureByteStride = sizeof(u16);
 
         std::vector<u16> indices;
-        indices.reserve(num_indices);
-        for (int x = 0; x <= width; x++) {
-            for (int y = 0; y <= height; y++) {
+        indices.resize(num_indices);
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 /* per quad
                 2------3
                 |    / *
@@ -72,12 +78,12 @@ inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device,
                 int v2 = x + (y+1) * (width+1);
                 int v3 = x+1 + (y+1) * (width+1);
                 
-                indices[quad_index + 0] = v0;
-                indices[quad_index + 1] = v3;
-                indices[quad_index + 2] = v1;
-                indices[quad_index + 3] = v2;
-                indices[quad_index + 4] = v3;
-                indices[quad_index + 5] = v0;
+                indices[quad_index*6 + 0] = v0;
+                indices[quad_index*6 + 1] = v3;
+                indices[quad_index*6 + 2] = v1;
+                indices[quad_index*6 + 3] = v2;
+                indices[quad_index*6 + 4] = v3;
+                indices[quad_index*6 + 5] = v0;
             }
         }
 
@@ -87,17 +93,70 @@ inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device,
     }
 
     // TODO: vertex attribute information. how are we storing this in DX11?
+
+    return S_OK;
 }
 
 ID3D11VertexShader* Patch::vs;
+ID3DBlob* Patch::vs_bytecode;
 ID3D11PixelShader* Patch::ps;
 
 void Patch::setup_patches(ID3D11Device* device) {
-    compile_vertex_shader(device, L"terrain.hlsl", "main_vs", &vs);
+    compile_vertex_shader(device, L"terrain.hlsl", "main_vs", &vs, &vs_bytecode);
     compile_pixel_shader(device, L"terrain.hlsl", "main_ps", &ps);
 }
 
-inline void Patch::render(ID3D11Device* device) {
-    // okay this is going to be a lot more work than DX9. Need to set up skeleton renderer with a camera.
-    assert(false);
+inline void Patch::render() {
+    u32 stride = sizeof(TerrainVert);
+    u32 offset = 0;
+    context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
+    context->IASetIndexBuffer(ib, DXGI_FORMAT_R16_UINT, 0);
+
+    context->VSSetShader(vs, nullptr, 0);
+    //context->VSSetConstantBuffers(0, 1, )
+
+    context->PSSetShader(ps, nullptr, 0);
+
+    context->DrawIndexed(size.x*size.y*6, 0, 0);
+}
+
+
+// Terrain
+
+void Terrain::generate_random_terrain(int seed, int num_patches) {
+    heightmap.create_random_heightmap(seed, 1.0, 0.5, 5);
+}
+
+void Terrain::create_patches(int num_patches) {
+            /*
+    for (int x = 0; x < num_patches; ++x) {
+        for (int y = 0; y < num_patches; ++y) {
+            RECT rect = {
+                x * (size.x-1) / num_patches,
+                y * (size.y-1) / num_patches,
+                (x+1) * (size.x-1) / num_patches,
+                (y+1) * (size.y-1) / num_patches,
+            };
+            patches.emplace_back();
+            patches[x + y*num_patches].create_mesh(heightmap, rect, device);
+        }
+    }
+            */
+	patches.emplace_back();
+    RECT rect = { 0, 0, size.x, size.y };
+	patches[0].create_mesh(heightmap, rect, device);
+
+    D3D11_INPUT_ELEMENT_DESC input_layout_desc[] = {
+        {"SV_POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+    };
+    HRASSERT(device->CreateInputLayout(input_layout_desc, NUM_ELEMENTS(input_layout_desc), Patch::vs_bytecode->GetBufferPointer(), Patch::vs_bytecode->GetBufferSize(), &input_layout));
+    assert(input_layout);
+}
+
+void Terrain::render() {
+    context->IASetInputLayout(input_layout);
+    // TODO: separate patches, separate positions
+    patches[0].render();
 }

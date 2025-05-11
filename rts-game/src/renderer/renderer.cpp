@@ -7,6 +7,7 @@
 ID3D11Device* device;
 ID3D11DeviceContext* context;
 IDXGISwapChain* swapchain;
+Terrain terrain({2, 2});
 
 void renderer_init(App &app) {
 	device = app.device;
@@ -15,6 +16,8 @@ void renderer_init(App &app) {
 
 	load_font();
 	Patch::setup_patches(device);
+	terrain.generate_random_terrain(550465, 1);
+	terrain.create_patches(1);
 }
 
 ID3D11RenderTargetView* get_backbuffer_rtv() {
@@ -52,8 +55,10 @@ HRESULT render() {
 
 	set_viewport();
 	context->OMSetRenderTargets(1, &backbuffer_rtv, nullptr);
+	// set depth stencil state
 
 	draw_debug_text(L"Hello, world");
+	terrain.render();
 
 	swapchain->Present(0, 0);
 

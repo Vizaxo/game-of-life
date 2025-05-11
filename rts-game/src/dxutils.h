@@ -81,10 +81,13 @@ inline HRESULT compile_pixel_shader(ID3D11Device* device, LPCWSTR src_file, LPCS
     return hr;
 }
 
-inline HRESULT compile_vertex_shader(ID3D11Device* device, LPCWSTR src_file, LPCSTR entrypoint, ID3D11VertexShader** vs) {
+inline HRESULT compile_vertex_shader(ID3D11Device* device, LPCWSTR src_file, LPCSTR entrypoint, ID3D11VertexShader** vs, ID3DBlob** bytecode = nullptr) {
     ID3DBlob* shader_blob;
     HRESULT hr = compile_shader(src_file, entrypoint, ShaderType::Vertex, &shader_blob);
     if (!FAILED(hr))
         hr = device->CreateVertexShader(shader_blob->GetBufferPointer(), shader_blob->GetBufferSize(), nullptr, vs);
+    *bytecode = shader_blob;
     return hr;
 }
+
+#define NUM_ELEMENTS(arr) (sizeof(arr)/sizeof(arr[0]))
