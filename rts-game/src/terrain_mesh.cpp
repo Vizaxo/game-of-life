@@ -30,7 +30,7 @@ inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device)
         for (int x = 0; x <= width; x++) {
             for (int y = 0; y <= height; y++) {
                 TerrainVert& vert = verts[x + y*(width+1)];
-                vert.pos = XMFLOAT3((float)x, (float)y, 0.0f); // TODO: put heightmap height back hm.get_height({x, y}));
+                vert.pos = XMFLOAT3((float)x, (float)y, hm.get_height({src.left + x, src.top + y}));
                 vert.normal = XMFLOAT3(0.0, 1.0, 0.0); // TODO: calc normals
                 XMStoreFloat4(&vert.color, Colors::Green);
             }
@@ -128,23 +128,22 @@ void Terrain::generate_random_terrain(int seed, int num_patches) {
 }
 
 void Terrain::create_patches(int num_patches) {
-            /*
-    for (int x = 0; x < num_patches; ++x) {
-        for (int y = 0; y < num_patches; ++y) {
+	for (int y = 0; y < num_patches; ++y) {
+		for (int x = 0; x < num_patches; ++x) {
+            int width = size.x / num_patches;
+            int height = size.y / num_patches;
+            int org_x = width * x;
+            int org_y = height * y;
             RECT rect = {
-                x * (size.x-1) / num_patches,
-                y * (size.y-1) / num_patches,
-                (x+1) * (size.x-1) / num_patches,
-                (y+1) * (size.y-1) / num_patches,
+                org_x,
+                org_y,
+                org_x + width,
+                org_y + height,
             };
             patches.emplace_back();
             patches[x + y*num_patches].create_mesh(heightmap, rect, device);
         }
     }
-            */
-	patches.emplace_back();
-    RECT rect = { 0, 0, size.x, size.y };
-	patches[0].create_mesh(heightmap, rect, device);
 
     D3D11_INPUT_ELEMENT_DESC input_layout_desc[] = {
         {"SV_POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -158,5 +157,6 @@ void Terrain::create_patches(int num_patches) {
 void Terrain::render() {
     context->IASetInputLayout(input_layout);
     // TODO: separate patches, separate positions
-    patches[0].render();
+    for (Patch& patch : patches)
+		patch.render();
 }

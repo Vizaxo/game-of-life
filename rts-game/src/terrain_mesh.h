@@ -28,7 +28,7 @@ private:
 };
 
 struct Terrain {
-    Terrain(IntPoint size) : size(size), heightmap(size) {}
+    Terrain(IntPoint size) : size(size), heightmap({size.x+1,size.y+1}) {}
     void generate_random_terrain(int seed, int num_patches);
     void create_patches(int num_patches);
     void render();

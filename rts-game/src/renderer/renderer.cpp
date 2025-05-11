@@ -7,7 +7,7 @@
 ID3D11Device* device;
 ID3D11DeviceContext* context;
 IDXGISwapChain* swapchain;
-Terrain terrain({2, 2});
+Terrain terrain({100, 100});
 
 void renderer_init(App &app) {
 	device = app.device;
@@ -17,7 +17,7 @@ void renderer_init(App &app) {
 	load_font();
 	Patch::setup_patches(device);
 	terrain.generate_random_terrain(550465, 1);
-	terrain.create_patches(1);
+	terrain.create_patches(5);
 }
 
 ID3D11RenderTargetView* get_backbuffer_rtv() {
