@@ -64,7 +64,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\shaders\shader_file.hlsl" />
     <None Include="src\shaders\terrain.hlsl" />
   </ItemGroup>
 </Project>
