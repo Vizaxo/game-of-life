@@ -2,6 +2,7 @@
 
 #include "app.h"
 #include "render_text.h"
+#include "terrain_mesh.h"
 
 ID3D11Device* device;
 ID3D11DeviceContext* context;
@@ -13,6 +14,7 @@ void renderer_init(App &app) {
 	swapchain = app.swapchain;
 
 	load_font();
+	Patch::setup_patches(device);
 }
 
 ID3D11RenderTargetView* get_backbuffer_rtv() {

@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "dxutils.h"
+
 inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device, int index) {
     int width = src.right - src.left;
     int height = src.bottom - src.top;
@@ -23,7 +25,7 @@ inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device,
         for (int x = 0; x <= width; x++) {
             for (int y = 0; y <= height; y++) {
                 TerrainVert& vert = verts[x + y*(width+1)];
-                vert.pos = XMFLOAT3(x, y, hm.get_height({x, y}));
+                vert.pos = XMFLOAT3((float)x, (float)y, hm.get_height({x, y}));
                 vert.normal = XMFLOAT3(0.0, 1.0, 0.0); // TODO: calc normals
                 XMStoreFloat4(&vert.color, Colors::Green);
             }
@@ -87,6 +89,15 @@ inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device,
     // TODO: vertex attribute information. how are we storing this in DX11?
 }
 
+ID3D11VertexShader* Patch::vs;
+ID3D11PixelShader* Patch::ps;
+
+void Patch::setup_patches(ID3D11Device* device) {
+    compile_vertex_shader(device, L"terrain.hlsl", "main_vs", &vs);
+    compile_pixel_shader(device, L"terrain.hlsl", "main_ps", &ps);
+}
+
 inline void Patch::render(ID3D11Device* device) {
     // okay this is going to be a lot more work than DX9. Need to set up skeleton renderer with a camera.
+    assert(false);
 }
