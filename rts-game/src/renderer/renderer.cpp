@@ -67,8 +67,22 @@ void set_viewport() {
 	context->RSSetViewports(1, &viewport);
 }
 
+XMMATRIX setup_camera() {
+	XMVECTOR cam_pos = DirectX::XMVectorSet(70.f, 50.f, 50.f, 1.f);
+	XMVECTOR look_at = DirectX::XMVectorSet(71.f, 50.f, 0.f, 1.f);
+	XMVECTOR cam_dir = DirectX::XMVectorSubtract(look_at, cam_pos);
+
+	XMVECTOR world_up = DirectX::XMVectorSet(0.f, 0.f, 1.f, 1.f);
+	XMVECTOR cam_right = DirectX::XMVector4Normalize(DirectX::XMVector3Cross(cam_dir, world_up));
+	XMVECTOR cam_up = DirectX::XMVector3Cross(cam_right, cam_dir);
+
+	return XMMatrixLookAtLH(cam_pos, look_at, world_up);
+}
+
 HRESULT render() {
-	ID3D11RenderTargetView* backbuffer_rtv = get_backbuffer_rtv();
+	RenderState rs;
+	rs.view = setup_camera();
+	rs.projection = XMMatrixPerspectiveFovLH(80, 4.f/3.f, 0.1f, 1000.f);
 
 	context->ClearRenderTargetView(backbuffer_rtv, Colors::Aqua);
 
@@ -77,7 +91,7 @@ HRESULT render() {
 	// set depth stencil state
 
 	draw_debug_text(L"Hello, world");
-	terrain.render();
+	terrain.render(rs);
 
 	swapchain->Present(0, 0);
 

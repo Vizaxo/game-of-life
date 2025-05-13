@@ -13,6 +13,8 @@ inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device)
     int height = src.bottom - src.top;
     size.x = width;
     size.y = height;
+    position.x = src.right;
+    position.y = src.top;
     num_vertices = (width+1) * (height+1);
     int num_triangles = width * height * 2;
 
@@ -101,20 +103,37 @@ inline HRESULT Patch::create_mesh(Heightmap& hm, RECT src, ID3D11Device* device)
 ID3D11VertexShader* Patch::vs;
 ID3DBlob* Patch::vs_bytecode;
 ID3D11PixelShader* Patch::ps;
+ID3D11Buffer* Patch::view_cb;
+ID3D11RasterizerState* Patch::rasterizer_state;
 
 void Patch::setup_patches(ID3D11Device* device) {
     compile_vertex_shader(device, L"terrain.hlsl", "main_vs", &vs, &vs_bytecode);
     compile_pixel_shader(device, L"terrain.hlsl", "main_ps", &ps);
 }
 
-inline void Patch::render() {
+inline void Patch::render(RenderState rs) {
     u32 stride = sizeof(TerrainVert);
     u32 offset = 0;
     context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
     context->IASetIndexBuffer(ib, DXGI_FORMAT_R16_UINT, 0);
 
     context->VSSetShader(vs, nullptr, 0);
-    //context->VSSetConstantBuffers(0, 1, )
+	{
+        D3D11_MAPPED_SUBRESOURCE subresource {};
+		XMMATRIX model = DirectX::XMMatrixIdentity();
+        model = DirectX::XMMatrixTranslation((float)position.x, (float)position.y, 0);
+        XMMATRIX mvp = XMMatrixMultiply(model, XMMatrixMultiply(rs.view, rs.projection));
+
+		//context->UpdateSubresource(view_cb, 0, 0, &mvp, sizeof(XMMATRIX), 0);
+		context->Map(view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
+        memcpy(subresource.pData, &mvp, sizeof(mvp));
+        context->Unmap(view_cb, 0);
+		context->VSSetConstantBuffers(0, 1, &view_cb);
+    }
+
+    context->RSSetState(rasterizer_state);
+
+
 
     context->PSSetShader(ps, nullptr, 0);
 
@@ -165,26 +184,30 @@ void Terrain::create_patches(int num_patches) {
     view_cb_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     view_cb_desc.MiscFlags = 0;
 
-    HRASSERT(device->CreateBuffer(&view_cb_desc, nullptr, &view_cb));
+    HRASSERT(device->CreateBuffer(&view_cb_desc, nullptr, &Patch::view_cb));
+
+    D3D11_RASTERIZER_DESC rs_desc {};
+    rs_desc.FillMode = D3D11_FILL_SOLID;
+    rs_desc.CullMode = D3D11_CULL_BACK;
+    rs_desc.FrontCounterClockwise = true;
+    rs_desc.DepthBias = 0;
+    rs_desc.DepthBiasClamp = 0;
+    rs_desc.SlopeScaledDepthBias = 0;
+    rs_desc.DepthClipEnable = false;
+    rs_desc.ScissorEnable = false;
+    rs_desc.MultisampleEnable = false;
+    rs_desc.AntialiasedLineEnable = false;
+
+    device->CreateRasterizerState(&rs_desc, &Patch::rasterizer_state);
 }
 
-void Terrain::render() {
+void Terrain::render(RenderState rs) {
     context->IASetInputLayout(input_layout);
     context->PSSetShaderResources(0, 1, &grass_srv);
     context->PSSetShaderResources(1, 1, &water_srv);
     context->PSSetShaderResources(2, 1, &stone_srv);
 
-    {
-        D3D11_MAPPED_SUBRESOURCE subresource {};
-		XMMATRIX mvp = DirectX::XMMatrixIdentity();
-		//context->UpdateSubresource(view_cb, 0, 0, &mvp, sizeof(XMMATRIX), 0);
-		context->Map(view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
-        memcpy(subresource.pData, &mvp, sizeof(mvp));
-        context->Unmap(view_cb, 0);
-		context->VSSetConstantBuffers(0, 1, &view_cb);
-    }
-
-    // TODO: fix resource leak
+        // TODO: fix resource leak
     ID3D11SamplerState* bilinear_sampler;
     D3D11_SAMPLER_DESC sampler_desc {};
     sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -195,5 +218,5 @@ void Terrain::render() {
     context->PSSetSamplers(0, 1, &bilinear_sampler);
     // TODO: separate patches, separate positions
     for (Patch& patch : patches)
-		patch.render();
+		patch.render(rs);
 }

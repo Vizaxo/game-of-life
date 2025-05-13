@@ -7,6 +7,7 @@ struct TerrainVert {
 struct v2p {
 	float4 pos : SV_POSITION;
 	float2 uv : TEXCOORD;
+	float height : COLOR;
 };
 
 Texture2D grass : register(t0);
@@ -23,13 +24,14 @@ v2p main_vs(in TerrainVert vert) {
 	v2p ret;
 	ret.pos = mul(mvp, float4(vert.pos, 1.0f));
 	ret.uv = vert.uv;
+	ret.height = vert.pos.z;
 	return ret;
 }
 
 float4 main_ps(in v2p data) : SV_Target {
-	float height = data.pos.z;
+	float height = data.height;
 	float4 color;
-	if (height < 0.2)
+	if (height < -0.8)
 		color = water.Sample(bilinear, data.uv);
 	else if (height < 0.5)
 		color = grass.Sample(bilinear, data.uv);
