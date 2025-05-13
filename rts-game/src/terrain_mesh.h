@@ -11,6 +11,10 @@ struct TerrainVert {
     XMFLOAT2 uv;
 };
 
+struct ViewCB {
+    XMMATRIX mvp;
+};
+
 struct Patch {
     HRESULT create_mesh(Heightmap& hm, RECT src, ID3D11Device* device);
     void render();
@@ -37,6 +41,7 @@ struct Terrain {
     ID3D11ShaderResourceView* water_srv;
     ID3D11ShaderResourceView* stone_srv;
     ID3D11InputLayout* input_layout;
+    ID3D11Buffer* view_cb;
     IntPoint size;
     Heightmap heightmap;
     std::vector<Patch> patches;

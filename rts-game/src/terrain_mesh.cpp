@@ -157,6 +157,15 @@ void Terrain::create_patches(int num_patches) {
     HRASSERT(CreateWICTextureFromFile(device, context, L"../resources/textures/grass.jpg", nullptr, &grass_srv));
     HRASSERT(CreateWICTextureFromFile(device, context, L"../resources/textures/water.jpg", nullptr, &water_srv));
     HRASSERT(CreateWICTextureFromFile(device, context, L"../resources/textures/stone.jpg", nullptr, &stone_srv));
+
+    D3D11_BUFFER_DESC view_cb_desc {};
+    view_cb_desc.ByteWidth = sizeof(ViewCB);
+    view_cb_desc.Usage = D3D11_USAGE_DYNAMIC;
+    view_cb_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    view_cb_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    view_cb_desc.MiscFlags = 0;
+
+    HRASSERT(device->CreateBuffer(&view_cb_desc, nullptr, &view_cb));
 }
 
 void Terrain::render() {
@@ -164,6 +173,16 @@ void Terrain::render() {
     context->PSSetShaderResources(0, 1, &grass_srv);
     context->PSSetShaderResources(1, 1, &water_srv);
     context->PSSetShaderResources(2, 1, &stone_srv);
+
+    {
+        D3D11_MAPPED_SUBRESOURCE subresource {};
+		XMMATRIX mvp = DirectX::XMMatrixIdentity();
+		//context->UpdateSubresource(view_cb, 0, 0, &mvp, sizeof(XMMATRIX), 0);
+		context->Map(view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
+        memcpy(subresource.pData, &mvp, sizeof(mvp));
+        context->Unmap(view_cb, 0);
+		context->VSSetConstantBuffers(0, 1, &view_cb);
+    }
 
     // TODO: fix resource leak
     ID3D11SamplerState* bilinear_sampler;

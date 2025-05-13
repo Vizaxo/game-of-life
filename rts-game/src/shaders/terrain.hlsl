@@ -4,7 +4,7 @@ struct TerrainVert {
 	float2 uv : TEXCOORD;
 };
 
-struct VSOut {
+struct v2p {
 	float4 pos : SV_POSITION;
 	float2 uv : TEXCOORD;
 };
@@ -14,14 +14,19 @@ Texture2D water : register(t1);
 Texture2D stone : register(t2);
 SamplerState bilinear : register(s0);
 
-VSOut main_vs(in TerrainVert vert) {
-	VSOut ret;
-	ret.pos = float4(vert.pos.xy / 10.0 - float2(0.5,0.5), vert.pos.z, 1.0f);
+cbuffer view_state : register(b0)
+{
+	float4x4 mvp;
+};
+
+v2p main_vs(in TerrainVert vert) {
+	v2p ret;
+	ret.pos = mul(mvp, float4(vert.pos, 1.0f));
 	ret.uv = vert.uv;
 	return ret;
 }
 
-float4 main_ps(in VSOut data) : SV_Target {
+float4 main_ps(in v2p data) : SV_Target {
 	float height = data.pos.z;
 	float4 color;
 	if (height < 0.2)
