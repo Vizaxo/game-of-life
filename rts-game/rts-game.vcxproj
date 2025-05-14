@@ -158,6 +158,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\app.cpp" />
+    <ClCompile Include="src\mesh.cpp" />
     <ClCompile Include="src\renderer\renderer.cpp" />
     <ClCompile Include="src\renderer\render_text.cpp" />
     <ClCompile Include="src\heightmap.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="src\dxutils.h" />
     <ClInclude Include="src\heightmap.h" />
     <ClInclude Include="src\intpoint.h" />
+    <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\renderer\renderer.h" />
     <ClInclude Include="src\renderer\render_text.h" />
     <ClCompile Include="src\terrain_mesh.cpp" />
