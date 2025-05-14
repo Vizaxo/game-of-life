@@ -3,10 +3,15 @@
 #include "common.h"
 #include <vector>
 
+struct MeshVert {
+    XMFLOAT3 pos;
+    XMFLOAT3 normal;
+    XMFLOAT2 uv;
+};
+
 class Mesh {
 public:
 	Mesh(const char* name);
-	~Mesh();
 	HRESULT load(const char* name);
 	void render();
 	void release();

@@ -47,6 +47,14 @@ inline void debug_print(LogLevel lvl, const wchar_t* str) {
     action_log_level(lvl);
 }
 
+#define assrt(cond, str) do{\
+    bool res = cond;\
+    if (!res) {\
+        debug_print(LogLevel::PRINT, str);\
+        DebugBreak();\
+    }\
+}while(0)
+
 #define HRASSERT(hr) do{\
     if (FAILED(hr)) {\
         char buf[1024];\

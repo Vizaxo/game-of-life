@@ -1,8 +1,8 @@
 #include "app.h"
 
 #include "renderer/renderer.h"
-
 #include "dxutils.h"
+#include "mesh.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
@@ -66,6 +66,9 @@ HRESULT App::init(HINSTANCE hInstance, int width, int height) {
         return hr;
 
     renderer_init(*this);
+
+    //Mesh train_mesh("train-diesel-a.fbx");
+    Mesh train_mesh("track.fbx");
 
     return S_OK;
 }
