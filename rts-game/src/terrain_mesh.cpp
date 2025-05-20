@@ -125,7 +125,7 @@ inline void Patch::render(RenderState rs) {
         XMMATRIX mvp = XMMatrixMultiply(model, XMMatrixMultiply(rs.view, rs.projection));
 
 		//context->UpdateSubresource(view_cb, 0, 0, &mvp, sizeof(XMMATRIX), 0);
-		context->Map(view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
+		HRASSERT(context->Map(view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
         memcpy(subresource.pData, &mvp, sizeof(mvp));
         context->Unmap(view_cb, 0);
 		context->VSSetConstantBuffers(0, 1, &view_cb);

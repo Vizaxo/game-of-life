@@ -1,18 +1,63 @@
 #include "mesh.h"
 
 #include "common.h"
-#include "ofbx.h"
+#include "obj.h"
 #include "renderer/renderer.h"
+#include "dxutils.h"
 
 const char* mesh_resource_path = "../resources/models";
+
+ID3D11VertexShader* Mesh::vs;
+ID3DBlob* Mesh::vs_bytecode;
+ID3D11PixelShader* Mesh::ps;
+ID3D11InputLayout* Mesh::input_layout;
+ID3D11Buffer* Mesh::view_cb;
+ID3D11RasterizerState* Mesh::rasterizer_state;
 
 Mesh::Mesh(const char* name) {
 	load(name);
 }
 
+void Mesh::static_init() {
+    D3D11_BUFFER_DESC view_cb_desc {};
+    view_cb_desc.ByteWidth = sizeof(ViewCB);
+    view_cb_desc.Usage = D3D11_USAGE_DYNAMIC;
+    view_cb_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    view_cb_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    view_cb_desc.MiscFlags = 0;
+
+    HRASSERT(device->CreateBuffer(&view_cb_desc, nullptr, &view_cb));
+
+    compile_vertex_shader(device, L"mesh.hlsl", "main_vs", &vs, &vs_bytecode);
+    compile_pixel_shader(device, L"mesh.hlsl", "main_ps", &ps);
+
+    D3D11_INPUT_ELEMENT_DESC input_layout_desc[] = {
+        {"SV_POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+    };
+    HRASSERT(device->CreateInputLayout(input_layout_desc, NUM_ELEMENTS(input_layout_desc), Mesh::vs_bytecode->GetBufferPointer(), Mesh::vs_bytecode->GetBufferSize(), &input_layout));
+    assert(input_layout);
+
+    D3D11_RASTERIZER_DESC rs_desc {};
+    rs_desc.FillMode = D3D11_FILL_SOLID;
+    rs_desc.CullMode = D3D11_CULL_BACK;
+    rs_desc.FrontCounterClockwise = true;
+    rs_desc.DepthBias = 0;
+    rs_desc.DepthBiasClamp = 0;
+    rs_desc.SlopeScaledDepthBias = 0;
+    rs_desc.DepthClipEnable = false;
+    rs_desc.ScissorEnable = false;
+    rs_desc.MultisampleEnable = false;
+    rs_desc.AntialiasedLineEnable = false;
+
+    device->CreateRasterizerState(&rs_desc, &Mesh::rasterizer_state);
+}
+
 HRESULT Mesh::load(const char* name) {
 	char path[1024];
 	snprintf(path, 1024, "%s/%s", mesh_resource_path, name);
+	/*
 	FILE* fp;
 	size_t size;
 	if (!(fp = fopen(path, "r")))
@@ -28,70 +73,83 @@ HRESULT Mesh::load(const char* name) {
 
 	if (!size == fread(contents, 1, size, fp))
 		debug_print(LogLevel::FATAL, "Did not read enough bytes");
+		*/
 
+	std::unique_ptr<MeshData> mesh_data = importOBJ("testmesh", path);
 
+	/*
 	ofbx::IScene* scene = ofbx::load(contents, size, 0u);
 	if (!scene)
 		debug_print(LogLevel::FATAL, "Failed to load scene");
 
 	u32 num_meshes = scene->getMeshCount();
+		*/
 
-	for (u32 i = 0; i < num_meshes; ++i) {
-		const ofbx::Mesh* mesh = scene->getMesh(i);
-		const ofbx::GeometryData& gd = mesh->getGeometryData();
-		const ofbx::Vec3Attributes positions = gd.getPositions();
-		assrt(positions.count < USHRT_MAX, "Too many indices for this mesh section. Use u32.");
-		assrt(positions.indices, "Mesh does not use indices. Implement non-indexed mesh support.");
+	// vertex buffer
+	num_vertices = (u32)mesh_data->verts.size();
+	{
+		D3D11_BUFFER_DESC bd{};
+		bd.ByteWidth = sizeof(MeshVert) * num_vertices;
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bd.CPUAccessFlags = 0;
+		bd.MiscFlags = 0;
+		bd.StructureByteStride = sizeof(MeshVert);
 
-		u16* indices = (u16*)malloc(sizeof(u16)*positions.count);
-		MeshVert* verts = (MeshVert*)malloc(sizeof(MeshVert)*positions.values_count);
-
-		for (int j = 0; j < positions.count; ++j)
-			indices[j] = positions.indices[j];
-		for (int j = 0; j < positions.values_count; ++j) {
-			ofbx::Vec3 pos = positions.values[j];
-			verts[j].pos.x = pos.x;
-			verts[j].pos.y = pos.y;
-			verts[j].pos.z = pos.z;
-		}
-
-		// vertex buffer
-		{
-			D3D11_BUFFER_DESC bd{};
-			bd.ByteWidth = sizeof(MeshVert) * positions.values_count;
-			bd.Usage = D3D11_USAGE_DEFAULT;
-			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-			bd.CPUAccessFlags = 0;
-			bd.MiscFlags = 0;
-			bd.StructureByteStride = sizeof(MeshVert);
-
-			D3D11_SUBRESOURCE_DATA vert_data{};
-			vert_data.pSysMem = verts;
-			vert_data.SysMemPitch = sizeof(MeshVert);
-			device->CreateBuffer(&bd, &vert_data, &vb);
-		}
-
-		// index buffer
-		{
-			D3D11_BUFFER_DESC bd{};
-			bd.ByteWidth = sizeof(u16) * positions.count;
-			bd.Usage = D3D11_USAGE_DEFAULT;
-			bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-			bd.CPUAccessFlags = 0;
-			bd.MiscFlags = 0;
-			bd.StructureByteStride = sizeof(u16);
-
-			D3D11_SUBRESOURCE_DATA index_data{};
-			index_data.pSysMem = indices;
-			device->CreateBuffer(&bd, &index_data, &ib);
-		}
-
-		free(verts);
-		free(indices);
+		D3D11_SUBRESOURCE_DATA vert_data{};
+		vert_data.pSysMem = mesh_data->verts.data();
+		vert_data.SysMemPitch = sizeof(MeshVert);
+		HRASSERT(device->CreateBuffer(&bd, &vert_data, &vb));
 	}
-	scene->destroy();
 
-	fclose(fp);
-	free(contents);
+	// index buffer
+	num_indices = (u32)mesh_data->indices.size();
+	{
+		D3D11_BUFFER_DESC bd{};
+		bd.ByteWidth = sizeof(u32) * num_indices;
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		bd.CPUAccessFlags = 0;
+		bd.MiscFlags = 0;
+		bd.StructureByteStride = sizeof(u32);
+
+		D3D11_SUBRESOURCE_DATA index_data{};
+		index_data.pSysMem = mesh_data->indices.data();
+		HRASSERT(device->CreateBuffer(&bd, &index_data, &ib));
+	}
+
+	//fclose(fp);
+	//free(contents);
 	return S_OK;
+}
+
+void Mesh::render(RenderState rs) {
+{
+    context->IASetInputLayout(input_layout);
+    u32 stride = sizeof(MeshVert);
+    u32 offset = 0;
+    context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
+    context->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
+
+    context->VSSetShader(vs, nullptr, 0);
+	{
+        D3D11_MAPPED_SUBRESOURCE subresource {};
+		XMMATRIX model = DirectX::XMMatrixIdentity();
+        model = DirectX::XMMatrixTranslation((float)position.x, (float)position.y, 0);
+        XMMATRIX mvp = XMMatrixMultiply(model, XMMatrixMultiply(rs.view, rs.projection));
+
+		//context->UpdateSubresource(view_cb, 0, 0, &mvp, sizeof(XMMATRIX), 0);
+		HRASSERT(context->Map(view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
+        memcpy(subresource.pData, &mvp, sizeof(mvp));
+        context->Unmap(view_cb, 0);
+		context->VSSetConstantBuffers(0, 1, &view_cb);
+    }
+
+    context->RSSetState(rasterizer_state);
+
+    context->PSSetShader(ps, nullptr, 0);
+
+    context->DrawIndexed(num_indices, 0, 0);
+}
+
 }

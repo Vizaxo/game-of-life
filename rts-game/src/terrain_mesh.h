@@ -4,20 +4,12 @@
 
 #include "common.h"
 #include "heightmap.h"
+#include "renderer/renderer.h"
 
 struct TerrainVert {
     XMFLOAT3 pos;
     XMFLOAT3 normal;
     XMFLOAT2 uv;
-};
-
-struct ViewCB {
-    XMMATRIX mvp;
-};
-
-struct RenderState {
-    XMMATRIX view;
-    XMMATRIX projection;
 };
 
 struct Patch {

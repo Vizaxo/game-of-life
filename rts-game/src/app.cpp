@@ -68,7 +68,6 @@ HRESULT App::init(HINSTANCE hInstance, int width, int height) {
     renderer_init(*this);
 
     //Mesh train_mesh("train-diesel-a.fbx");
-    Mesh train_mesh("track.fbx");
 
     return S_OK;
 }

@@ -6,12 +6,14 @@
 #include "app.h"
 #include "render_text.h"
 #include "terrain_mesh.h"
+#include "mesh.h"
 
 ID3D11Device* device;
 ID3D11DeviceContext* context;
 IDXGISwapChain* swapchain;
 ID3D11RenderTargetView* backbuffer_rtv;
 Terrain terrain({100, 100});
+std::unique_ptr<Mesh> train_mesh;
 
 Microsoft::WRL::Wrappers::RoInitializeWrapper* initialize;
 
@@ -54,6 +56,9 @@ void renderer_init(App &app) {
 #endif
 
 	backbuffer_rtv = get_backbuffer_rtv();
+
+	Mesh::static_init();
+	train_mesh = std::make_unique<Mesh>("track.obj");
 }
 
 void set_viewport() {
@@ -68,8 +73,10 @@ void set_viewport() {
 }
 
 XMMATRIX setup_camera() {
-	XMVECTOR cam_pos = DirectX::XMVectorSet(70.f, 50.f, 50.f, 1.f);
-	XMVECTOR look_at = DirectX::XMVectorSet(71.f, 50.f, 0.f, 1.f);
+	//XMVECTOR cam_pos = DirectX::XMVectorSet(70.f, 50.f, 50.f, 1.f);
+	//XMVECTOR look_at = DirectX::XMVectorSet(71.f, 50.f, 0.f, 1.f);
+	XMVECTOR cam_pos = DirectX::XMVectorSet(1.f, 1.f, 1.f, 1.f);
+	XMVECTOR look_at = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 	XMVECTOR cam_dir = DirectX::XMVectorSubtract(look_at, cam_pos);
 
 	XMVECTOR world_up = DirectX::XMVectorSet(0.f, 0.f, 1.f, 1.f);
@@ -91,7 +98,8 @@ HRESULT render() {
 	// set depth stencil state
 
 	draw_debug_text(L"Hello, world");
-	terrain.render(rs);
+	//terrain.render(rs);
+	train_mesh->render(rs);
 
 	swapchain->Present(0, 0);
 
