@@ -48,4 +48,6 @@ struct MeshInstance {
     MeshInstance(Mesh* mesh, XMFLOAT3 pos) : mesh(mesh), position(pos) {}
     Mesh* mesh;
     XMFLOAT3 position;
+    XMFLOAT3 rot = {0.f, 0.f, 0.f};
+    XMFLOAT3 scale = {1.f, 1.f, 1.f};
 };

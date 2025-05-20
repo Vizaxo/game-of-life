@@ -135,8 +135,11 @@ void MeshInstance::render(RenderState rs) {
 	{
         D3D11_MAPPED_SUBRESOURCE subresource {};
 		XMMATRIX model = DirectX::XMMatrixIdentity();
-        model = DirectX::XMMatrixTranslation((float)position.x, (float)position.y, 0);
-        XMMATRIX mvp = XMMatrixMultiply(model, XMMatrixMultiply(rs.view, rs.projection));
+        model = 
+			DirectX::XMMatrixMultiply(DirectX::XMMatrixScaling(scale.x,scale.y,scale.z), 
+			DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z), 
+			DirectX::XMMatrixTranslation((float)position.x, (float)position.y, 0)));
+        XMMATRIX mvp = DirectX::XMMatrixMultiply(model, DirectX::XMMatrixMultiply(rs.view, rs.projection));
 
 		//context->UpdateSubresource(view_cb, 0, 0, &mvp, sizeof(XMMATRIX), 0);
 		HRASSERT(context->Map(mesh->view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
