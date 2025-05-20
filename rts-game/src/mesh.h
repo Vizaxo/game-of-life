@@ -20,10 +20,10 @@ struct MeshData {
 };
 
 class Mesh {
+    friend struct MeshInstance;
 public:
 	Mesh(const char* name);
 	HRESULT load(const char* name);
-	void render(RenderState rs);
 	void release();
     static void static_init();
 
@@ -32,7 +32,6 @@ private:
     int num_indices;
     ID3D11Buffer* vb;
     ID3D11Buffer* ib;
-    XMFLOAT3 position;
 
     static ID3D11VertexShader* vs;
     static ID3DBlob* vs_bytecode;
@@ -42,4 +41,11 @@ private:
 	static ID3D11RasterizerState* rasterizer_state;
 
     std::vector<ID3D11ShaderResourceView*> textures;
+};
+
+struct MeshInstance {
+	void render(RenderState rs);
+    MeshInstance(Mesh* mesh, XMFLOAT3 pos) : mesh(mesh), position(pos) {}
+    Mesh* mesh;
+    XMFLOAT3 position;
 };

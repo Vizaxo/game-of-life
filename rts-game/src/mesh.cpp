@@ -123,15 +123,15 @@ HRESULT Mesh::load(const char* name) {
 	return S_OK;
 }
 
-void Mesh::render(RenderState rs) {
+void MeshInstance::render(RenderState rs) {
 {
-    context->IASetInputLayout(input_layout);
+    context->IASetInputLayout(mesh->input_layout);
     u32 stride = sizeof(MeshVert);
     u32 offset = 0;
-    context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
-    context->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
+    context->IASetVertexBuffers(0, 1, &mesh->vb, &stride, &offset);
+    context->IASetIndexBuffer(mesh->ib, DXGI_FORMAT_R32_UINT, 0);
 
-    context->VSSetShader(vs, nullptr, 0);
+    context->VSSetShader(mesh->vs, nullptr, 0);
 	{
         D3D11_MAPPED_SUBRESOURCE subresource {};
 		XMMATRIX model = DirectX::XMMatrixIdentity();
@@ -139,17 +139,17 @@ void Mesh::render(RenderState rs) {
         XMMATRIX mvp = XMMatrixMultiply(model, XMMatrixMultiply(rs.view, rs.projection));
 
 		//context->UpdateSubresource(view_cb, 0, 0, &mvp, sizeof(XMMATRIX), 0);
-		HRASSERT(context->Map(view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
+		HRASSERT(context->Map(mesh->view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
         memcpy(subresource.pData, &mvp, sizeof(mvp));
-        context->Unmap(view_cb, 0);
-		context->VSSetConstantBuffers(0, 1, &view_cb);
+        context->Unmap(mesh->view_cb, 0);
+		context->VSSetConstantBuffers(0, 1, &mesh->view_cb);
     }
 
-    context->RSSetState(rasterizer_state);
+    context->RSSetState(mesh->rasterizer_state);
 
-    context->PSSetShader(ps, nullptr, 0);
+    context->PSSetShader(mesh->ps, nullptr, 0);
 
-    context->DrawIndexed(num_indices, 0, 0);
+    context->DrawIndexed(mesh->num_indices, 0, 0);
 }
 
 }

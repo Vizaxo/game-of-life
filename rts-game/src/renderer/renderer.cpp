@@ -14,6 +14,7 @@ IDXGISwapChain* swapchain;
 ID3D11RenderTargetView* backbuffer_rtv;
 Terrain terrain({100, 100});
 std::unique_ptr<Mesh> train_mesh;
+std::unique_ptr<MeshInstance> train_mesh_instance;
 
 Microsoft::WRL::Wrappers::RoInitializeWrapper* initialize;
 
@@ -59,6 +60,7 @@ void renderer_init(App &app) {
 
 	Mesh::static_init();
 	train_mesh = std::make_unique<Mesh>("track.obj");
+	train_mesh_instance = std::make_unique<MeshInstance>(train_mesh.get(), XMFLOAT3({0, 0, 0}));
 }
 
 void set_viewport() {
@@ -99,7 +101,7 @@ HRESULT render() {
 
 	draw_debug_text(L"Hello, world");
 	//terrain.render(rs);
-	train_mesh->render(rs);
+	train_mesh_instance->render(rs);
 
 	swapchain->Present(0, 0);
 
