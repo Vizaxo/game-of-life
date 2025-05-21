@@ -54,6 +54,9 @@ void renderer_init(App &app) {
 	backbuffer_rtv = get_backbuffer_rtv();
 
 	Mesh::static_init();
+	train_mesh = std::make_unique<Mesh>();
+	train_mesh->load("quad", quad_mesh_data);
+	train_mesh_instance = std::make_unique<MeshInstance>(train_mesh.get(), XMFLOAT3({0, 0, 0}));
 }
 
 void set_viewport() {

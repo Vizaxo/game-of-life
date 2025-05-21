@@ -19,6 +19,16 @@ struct MeshData {
     }
 };
 
+inline MeshData quad_mesh_data = {
+    std::vector<MeshVert>({
+        MeshVert({{0.f,0.f,0.f}, {0.f,0.f,0.f}, {0.f,0.f}}),
+        MeshVert({{0.f,1.f,0.f}, {0.f,0.f,0.f}, {0.f,1.f}}),
+        MeshVert({{1.f,0.f,0.f}, {0.f,0.f,0.f}, {1.f,0.f}}),
+        MeshVert({{1.f,1.f,0.f}, {0.f,0.f,0.f}, {1.f,1.f}}),
+	}),
+    std::vector<u32>({0,1,2,1,3,2})
+};
+
 class Mesh {
     friend struct MeshInstance;
 public:
