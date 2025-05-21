@@ -1,6 +1,5 @@
 struct MeshVert {
-	float3 pos : SV_POSITION;
-	float3 normal : NORMAL;
+	float2 pos : SV_POSITION;
 	float2 uv : TEXCOORD;
 };
 
@@ -12,16 +11,31 @@ struct v2p {
 cbuffer view_state : register(b0)
 {
 	float4x4 mvp;
+	float2 screen_size;
+	float time;
 };
 
 v2p main_vs(in MeshVert vert) {
 	v2p ret;
-	ret.pos = mul(mvp, float4(vert.pos, 1.0f));
+
+	float aspect = screen_size.x / screen_size.y;
+
+	float2 pos = vert.pos * 2.0 - 1.0;
+	pos.x /= aspect;
+	ret.pos = float4(pos, 0.f, 1.f);
 	ret.uv = vert.uv;
 	return ret;
 }
 
 float4 main_ps(in v2p data) : SV_Target {
 	float4 color = float4(1.0, 0.0, 0.0, 1.0);
-	return color;
+	float4 bg = float4(0.f, 0., 0., 0.0);
+
+	float2 uv = data.uv;
+	uv *= 2.;
+	uv -= 1.;
+	if (uv.x*uv.x + uv.y*uv.y < 0.3)
+		return color;
+	else
+		return bg;
 }

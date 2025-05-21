@@ -11,8 +11,8 @@ ID3D11Device* device;
 ID3D11DeviceContext* context;
 IDXGISwapChain* swapchain;
 ID3D11RenderTargetView* backbuffer_rtv;
-std::unique_ptr<Mesh> train_mesh;
-std::unique_ptr<MeshInstance> train_mesh_instance;
+std::unique_ptr<Mesh> quad_mesh;
+std::unique_ptr<MeshInstance> quad_mesh_instance;
 
 Microsoft::WRL::Wrappers::RoInitializeWrapper* initialize;
 
@@ -54,9 +54,9 @@ void renderer_init(App &app) {
 	backbuffer_rtv = get_backbuffer_rtv();
 
 	Mesh::static_init();
-	train_mesh = std::make_unique<Mesh>();
-	train_mesh->load("quad", quad_mesh_data);
-	train_mesh_instance = std::make_unique<MeshInstance>(train_mesh.get(), XMFLOAT3({0, 0, 0}));
+	quad_mesh = std::make_unique<Mesh>();
+	quad_mesh->load("quad", quad_mesh_data);
+	quad_mesh_instance = std::make_unique<MeshInstance>(quad_mesh.get(), XMFLOAT3({0, 0, 0}));
 }
 
 void set_viewport() {
@@ -86,8 +86,8 @@ XMMATRIX setup_camera() {
 
 HRESULT render() {
 	RenderState rs;
-	rs.view = setup_camera();
-	rs.projection = XMMatrixPerspectiveFovLH(80, 4.f/3.f, 0.1f, 1000.f);
+	rs.view = XMMatrixIdentity(); //setup_camera();
+	rs.projection = XMMatrixIdentity(); //XMMatrixPerspectiveFovLH(80, 4.f/3.f, 0.1f, 1000.f);
 
 	context->ClearRenderTargetView(backbuffer_rtv, Colors::Aqua);
 
@@ -96,7 +96,7 @@ HRESULT render() {
 	// set depth stencil state
 
 	draw_debug_text(L"Hello, world");
-	train_mesh_instance->render(rs);
+	quad_mesh_instance->render(rs);
 
 	swapchain->Present(0, 0);
 

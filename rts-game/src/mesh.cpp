@@ -31,8 +31,7 @@ void Mesh::static_init() {
     compile_pixel_shader(device, L"circle.hlsl", "main_ps", &ps);
 
     D3D11_INPUT_ELEMENT_DESC input_layout_desc[] = {
-        {"SV_POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"SV_POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
         {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
     HRASSERT(device->CreateInputLayout(input_layout_desc, NUM_ELEMENTS(input_layout_desc), Mesh::vs_bytecode->GetBufferPointer(), Mesh::vs_bytecode->GetBufferSize(), &input_layout));
@@ -41,7 +40,7 @@ void Mesh::static_init() {
     D3D11_RASTERIZER_DESC rs_desc {};
     rs_desc.FillMode = D3D11_FILL_SOLID;
     rs_desc.CullMode = D3D11_CULL_BACK;
-    rs_desc.FrontCounterClockwise = true;
+    rs_desc.FrontCounterClockwise = false;
     rs_desc.DepthBias = 0;
     rs_desc.DepthBiasClamp = 0;
     rs_desc.SlopeScaledDepthBias = 0;
@@ -112,13 +111,19 @@ void MeshInstance::render(RenderState rs) {
 			DirectX::XMMatrixMultiply(DirectX::XMMatrixScaling(scale.x,scale.y,scale.z), 
 			DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z), 
 			DirectX::XMMatrixTranslation((float)position.x, (float)position.y, 0)));
-        XMMATRIX mvp = DirectX::XMMatrixMultiply(model, DirectX::XMMatrixMultiply(rs.view, rs.projection));
+		ViewCB view_cb_data {};
+        view_cb_data.mvp = DirectX::XMMatrixMultiply(model, DirectX::XMMatrixMultiply(rs.view, rs.projection));
+		view_cb_data.screen_size = {640,480};
+		u64 ticks_ms = GetTickCount64();
+		float time = (float)ticks_ms / 1000.f;
+		view_cb_data.time = time;
 
 		//context->UpdateSubresource(view_cb, 0, 0, &mvp, sizeof(XMMATRIX), 0);
 		HRASSERT(context->Map(mesh->view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
-        memcpy(subresource.pData, &mvp, sizeof(mvp));
+        memcpy(subresource.pData, &view_cb_data, sizeof(ViewCB));
         context->Unmap(mesh->view_cb, 0);
 		context->VSSetConstantBuffers(0, 1, &mesh->view_cb);
+		context->PSSetConstantBuffers(0, 1, &mesh->view_cb);
     }
 
     context->RSSetState(mesh->rasterizer_state);

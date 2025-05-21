@@ -5,8 +5,7 @@
 #include <vector>
 
 struct MeshVert {
-    XMFLOAT3 pos;
-    XMFLOAT3 normal;
+    XMFLOAT2 pos;
     XMFLOAT2 uv;
 };
 
@@ -21,10 +20,10 @@ struct MeshData {
 
 inline MeshData quad_mesh_data = {
     std::vector<MeshVert>({
-        MeshVert({{0.f,0.f,0.f}, {0.f,0.f,0.f}, {0.f,0.f}}),
-        MeshVert({{0.f,1.f,0.f}, {0.f,0.f,0.f}, {0.f,1.f}}),
-        MeshVert({{1.f,0.f,0.f}, {0.f,0.f,0.f}, {1.f,0.f}}),
-        MeshVert({{1.f,1.f,0.f}, {0.f,0.f,0.f}, {1.f,1.f}}),
+        MeshVert({{0.f,0.f}, {0.f,0.f}}),
+        MeshVert({{0.f,1.f}, {0.f,1.f}}),
+        MeshVert({{1.f,0.f}, {1.f,0.f}}),
+        MeshVert({{1.f,1.f}, {1.f,1.f}}),
 	}),
     std::vector<u32>({0,1,2,1,3,2})
 };

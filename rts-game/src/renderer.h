@@ -9,6 +9,8 @@ extern IDXGISwapChain* swapchain;
 
 struct ViewCB {
     XMMATRIX mvp;
+    XMFLOAT2 screen_size;
+    float time;
 };
 
 struct RenderState {

@@ -282,14 +282,15 @@ std::unique_ptr<MeshData> importOBJ(std::string name, const char* filepath) {
 	std::vector<u32> indices;
 	for (int i = 0; i < splitIndices.size(); i += 1) {
 		XMFLOAT3 pos = positions[splitIndices[i].x - 1];
+		XMFLOAT2 pos_2d = {pos.x,pos.y};
 		XMFLOAT2 tc = uvs[splitIndices[i].y - 1];
 		tc.y = 1 - tc.y;
-		XMFLOAT3 norm = normals[splitIndices[i].z - 1];
+		//XMFLOAT3 norm = normals[splitIndices[i].z - 1];
 
 		size_t index_u64 = verts.size();
 		assrt(index_u64 <= UINT_MAX, "Too many verts to fit in u32 indices!");
 		u32 index = (u32)index_u64;
-		verts.push_back({pos, norm, tc});
+		verts.push_back({pos_2d, tc});
 		indices.push_back(index);
 	}
 
