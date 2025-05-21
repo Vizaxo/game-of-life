@@ -2,7 +2,7 @@
 
 #include "common.h"
 #include "obj.h"
-#include "renderer/renderer.h"
+#include "renderer.h"
 #include "dxutils.h"
 
 const char* mesh_resource_path = "../resources/models";
@@ -14,8 +14,7 @@ ID3D11InputLayout* Mesh::input_layout;
 ID3D11Buffer* Mesh::view_cb;
 ID3D11RasterizerState* Mesh::rasterizer_state;
 
-Mesh::Mesh(const char* name) {
-	load(name);
+Mesh::Mesh() {
 }
 
 void Mesh::static_init() {
@@ -28,8 +27,8 @@ void Mesh::static_init() {
 
     HRASSERT(device->CreateBuffer(&view_cb_desc, nullptr, &view_cb));
 
-    compile_vertex_shader(device, L"mesh.hlsl", "main_vs", &vs, &vs_bytecode);
-    compile_pixel_shader(device, L"mesh.hlsl", "main_ps", &ps);
+    compile_vertex_shader(device, L"circle.hlsl", "main_vs", &vs, &vs_bytecode);
+    compile_pixel_shader(device, L"circle.hlsl", "main_ps", &ps);
 
     D3D11_INPUT_ELEMENT_DESC input_layout_desc[] = {
         {"SV_POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -54,39 +53,13 @@ void Mesh::static_init() {
     device->CreateRasterizerState(&rs_desc, &Mesh::rasterizer_state);
 }
 
-HRESULT Mesh::load(const char* name) {
-	char path[1024];
-	snprintf(path, 1024, "%s/%s", mesh_resource_path, name);
-	/*
-	FILE* fp;
-	size_t size;
-	if (!(fp = fopen(path, "r")))
-		debug_print(LogLevel::FATAL, "Could not find model file to load");
-
-	fseek(fp, 0, SEEK_END);
-	size = ftell(fp);
-	rewind(fp);
-
-	u8* contents = (u8*)malloc(size);
-	if (!contents)
-		debug_print(LogLevel::FATAL, "Malloc failed");
-
-	if (!size == fread(contents, 1, size, fp))
-		debug_print(LogLevel::FATAL, "Did not read enough bytes");
-		*/
-
-	std::unique_ptr<MeshData> mesh_data = importOBJ("testmesh", path);
-
-	/*
-	ofbx::IScene* scene = ofbx::load(contents, size, 0u);
-	if (!scene)
-		debug_print(LogLevel::FATAL, "Failed to load scene");
-
-	u32 num_meshes = scene->getMeshCount();
-		*/
+HRESULT Mesh::load(const char* name, MeshData& mesh_data) {
+	//char path[1024];
+	//snprintf(path, 1024, "%s/%s", mesh_resource_path, name);
+	//std::unique_ptr<MeshData> mesh_data = importOBJ("testmesh", path);
 
 	// vertex buffer
-	num_vertices = (u32)mesh_data->verts.size();
+	num_vertices = (u32)mesh_data.verts.size();
 	{
 		D3D11_BUFFER_DESC bd{};
 		bd.ByteWidth = sizeof(MeshVert) * num_vertices;
@@ -97,13 +70,13 @@ HRESULT Mesh::load(const char* name) {
 		bd.StructureByteStride = sizeof(MeshVert);
 
 		D3D11_SUBRESOURCE_DATA vert_data{};
-		vert_data.pSysMem = mesh_data->verts.data();
+		vert_data.pSysMem = mesh_data.verts.data();
 		vert_data.SysMemPitch = sizeof(MeshVert);
 		HRASSERT(device->CreateBuffer(&bd, &vert_data, &vb));
 	}
 
 	// index buffer
-	num_indices = (u32)mesh_data->indices.size();
+	num_indices = (u32)mesh_data.indices.size();
 	{
 		D3D11_BUFFER_DESC bd{};
 		bd.ByteWidth = sizeof(u32) * num_indices;
@@ -114,7 +87,7 @@ HRESULT Mesh::load(const char* name) {
 		bd.StructureByteStride = sizeof(u32);
 
 		D3D11_SUBRESOURCE_DATA index_data{};
-		index_data.pSysMem = mesh_data->indices.data();
+		index_data.pSysMem = mesh_data.indices.data();
 		HRASSERT(device->CreateBuffer(&bd, &index_data, &ib));
 	}
 

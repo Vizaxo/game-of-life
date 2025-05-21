@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common.h"
-#include "renderer/renderer.h"
+#include "renderer.h"
 #include <vector>
 
 struct MeshVert {
@@ -22,8 +22,8 @@ struct MeshData {
 class Mesh {
     friend struct MeshInstance;
 public:
-	Mesh(const char* name);
-	HRESULT load(const char* name);
+	Mesh();
+	HRESULT load(const char* name, MeshData& mesh_data);
 	void release();
     static void static_init();
 

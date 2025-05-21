@@ -1,6 +1,6 @@
 #include "app.h"
 
-#include "renderer/renderer.h"
+#include "renderer.h"
 #include "dxutils.h"
 #include "mesh.h"
 

@@ -160,23 +160,19 @@
     <ClCompile Include="src\app.cpp" />
     <ClCompile Include="src\mesh.cpp" />
     <ClCompile Include="src\obj.cpp" />
-    <ClCompile Include="src\renderer\renderer.cpp" />
-    <ClCompile Include="src\renderer\render_text.cpp" />
-    <ClCompile Include="src\heightmap.cpp" />
+    <ClCompile Include="src\renderer.cpp" />
+    <ClCompile Include="src\render_text.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\app.h" />
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\debug.h" />
     <ClInclude Include="src\dxutils.h" />
-    <ClInclude Include="src\heightmap.h" />
     <ClInclude Include="src\intpoint.h" />
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\obj.h" />
-    <ClInclude Include="src\renderer\renderer.h" />
-    <ClInclude Include="src\renderer\render_text.h" />
-    <ClCompile Include="src\terrain_mesh.cpp" />
-    <ClInclude Include="src\terrain_mesh.h" />
+    <ClInclude Include="src\renderer.h" />
+    <ClInclude Include="src\render_text.h" />
     <ClInclude Include="src\types.h" />
   </ItemGroup>
   <ItemGroup>
