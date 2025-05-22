@@ -34,7 +34,18 @@ float4 main_ps(in v2p data) : SV_Target {
 	float2 uv = data.uv;
 	uv *= 2.;
 	uv -= 1.;
-	if (uv.x*uv.x + uv.y*uv.y < 0.3)
+	float x = uv.x;
+	float y = uv.y;
+
+	float h = sqrt(x*x + y*y);
+	float theta = sin(uv.x/h);
+
+	float t = time;
+	t *= 2.f;
+
+	float r = sin(t + 2.*theta)/2.0 + 0.5;
+	r = 0.3 + 0.1*r;
+	if (uv.x*uv.x + uv.y*uv.y < r)
 		return color;
 	else
 		return bg;
