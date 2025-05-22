@@ -21,8 +21,8 @@ struct App {
     IDXGISwapChain* swapchain = nullptr;
     HWND hwnd;
 
-    u64 score = 0;
 };
 
+inline u64 score = 0;
 inline float time_elapsed = 0.f;
 inline float last_click_time = -100.f;

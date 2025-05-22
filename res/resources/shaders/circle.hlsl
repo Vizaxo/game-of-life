@@ -14,6 +14,8 @@ cbuffer view_state : register(b0)
 	float2 screen_size;
 	float time;
 	float last_click_time;
+	uint num_clicks_low;
+	uint num_clicks_high;
 };
 
 v2p main_vs(in MeshVert vert) {
@@ -50,6 +52,8 @@ float4 main_ps(in v2p data) : SV_Target {
 	r = 0.3 + 0.1*r;
 
 	r *= (1 - .2 * last_click_factor);
+
+	r *= clamp((float)(num_clicks_low+1) / (float) 100., 0., 1.);
 
 	if (uv.x*uv.x + uv.y*uv.y < r)
 		return color;

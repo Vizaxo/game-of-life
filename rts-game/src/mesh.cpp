@@ -119,6 +119,8 @@ void MeshInstance::render(RenderState rs) {
 		//float time = (float)ticks_ms / 1000.f;
 		view_cb_data.time = time_elapsed;
 		view_cb_data.last_click_time = last_click_time;
+		view_cb_data.num_clicks_low = score & 0xffffffff;
+		view_cb_data.num_clicks_high = (score >> 32) & 0xffffffff;
 
 		//context->UpdateSubresource(view_cb, 0, 0, &mvp, sizeof(XMMATRIX), 0);
 		HRASSERT(context->Map(mesh->view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));

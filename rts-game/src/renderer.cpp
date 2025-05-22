@@ -96,7 +96,7 @@ HRESULT render(App& app) {
 	// set depth stencil state
 
 	wchar_t buf[1024];
-	swprintf(buf, 1024, L"%lld", app.score);
+	swprintf(buf, 1024, L"%lld", score);
 	draw_text(buf, Colors::Red);
 	quad_mesh_instance->render(rs);
 
