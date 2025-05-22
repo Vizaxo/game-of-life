@@ -97,5 +97,6 @@ HRESULT App::quit() {
 }
 
 void App::left_mouse_clicked(u16 x, u16 y) {
+    last_click_time = time_elapsed;
     ++score;
 }

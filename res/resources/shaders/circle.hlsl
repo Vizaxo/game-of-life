@@ -45,7 +45,12 @@ float4 main_ps(in v2p data) : SV_Target {
 	t *= 2.f;
 
 	float r = sin(t + 2.*theta)/2.0 + 0.5;
+
+	float last_click_factor = 1. - clamp((time - last_click_time) / .3, 0., 1.);
 	r = 0.3 + 0.1*r;
+
+	r *= (1 - .2 * last_click_factor);
+
 	if (uv.x*uv.x + uv.y*uv.y < r)
 		return color;
 	else

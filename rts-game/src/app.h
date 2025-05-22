@@ -25,4 +25,4 @@ struct App {
 };
 
 inline float time_elapsed = 0.f;
-inline float last_click_time = 0.f;
+inline float last_click_time = -100.f;
