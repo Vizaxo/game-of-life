@@ -4,7 +4,7 @@
 
 struct App {
     HRESULT init(HINSTANCE hInstance, int width, int height);
-    HRESULT update(float dt, float t);
+    HRESULT update(double dt, double t);
     HRESULT render();
     HRESULT cleanup();
     HRESULT quit();
@@ -24,4 +24,4 @@ struct App {
     u64 score = 0;
 };
 
-inline float time_elapsed = 0.f;
+inline double time_elapsed = 0.f;

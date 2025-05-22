@@ -11,18 +11,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     MSG msg;
     memset(&msg, 0, sizeof(MSG));
 
-    int start_time = timeGetTime();
+    LARGE_INTEGER qpc;
+    QueryPerformanceFrequency(&qpc);
+
+    double frequency = (double)qpc.QuadPart;
+
+    QueryPerformanceCounter(&qpc);
+    u64 start_time = qpc.QuadPart;
+    u64 last_frame_time = start_time;
     while (msg.message != WM_QUIT) {
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         } else {
-            int t = timeGetTime();
-            float dt = (t - start_time) * 0.001f;
+            QueryPerformanceCounter(&qpc);
+            u64 t = qpc.QuadPart;
+            double dt = (double)(t - last_frame_time) / frequency;
 
-            app.update(dt, (float)t * 0.001f);
+            app.update(dt, (double)(t - start_time) / frequency);
             app.render();
-            start_time = t;
+            last_frame_time = t;
         }
     }
 
