@@ -13,7 +13,7 @@ void load_font() {
 	sprite_batch = std::make_unique<SpriteBatch>(context);
 }
 
-void draw_debug_text(const wchar_t* str) {
+void draw_text(const wchar_t* str, XMVECTOR color) {
 	assert(sprite_batch.get());
 	assert(debug_font.get());
 
@@ -27,7 +27,11 @@ void draw_debug_text(const wchar_t* str) {
 	XMFLOAT2 origin;
 	XMStoreFloat2(&origin, str_size);
 
-	debug_font->DrawString(sprite_batch.get(), str, font_pos, Colors::Black, 0.f, origin, 1.0);
+	debug_font->DrawString(sprite_batch.get(), str, font_pos, color, 0.f, origin, 1.0);
 
 	sprite_batch->End();
+}
+
+void draw_debug_text(const wchar_t* str) {
+	draw_text(str, Colors::Black);
 }

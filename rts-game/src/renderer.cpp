@@ -97,7 +97,7 @@ HRESULT render(App& app) {
 
 	wchar_t buf[1024];
 	swprintf(buf, 1024, L"%lld", app.score);
-	draw_debug_text(buf);
+	draw_text(buf, Colors::Red);
 	quad_mesh_instance->render(rs);
 
 	swapchain->Present(0, 0);

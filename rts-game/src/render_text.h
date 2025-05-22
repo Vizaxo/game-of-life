@@ -3,4 +3,5 @@
 #include "common.h"
 
 void load_font();
+void draw_text(const wchar_t* str, XMVECTOR color);
 void draw_debug_text(const wchar_t* str);
