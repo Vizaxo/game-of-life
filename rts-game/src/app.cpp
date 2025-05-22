@@ -13,6 +13,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         return 0;
     case WM_LBUTTONDOWN:
         app->left_mouse_clicked(lParam & 0xff, (lParam >> 16) & 0xff);
+        break;
     }
 
     return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -25,6 +26,7 @@ void App::register_window_class(HINSTANCE hInstance) {
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
     wc.lpszClassName = class_name;
+    wc.hCursor = LoadCursor(0, IDC_ARROW);
 
     RegisterClass(&wc);
 }
