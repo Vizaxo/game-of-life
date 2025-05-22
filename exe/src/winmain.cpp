@@ -20,7 +20,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             int t = timeGetTime();
             float dt = (t - start_time) * 0.001f;
 
-            app.update(dt);
+            app.update(dt, (float)t * 0.001f);
             app.render();
             start_time = t;
         }

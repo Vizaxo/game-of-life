@@ -4,6 +4,7 @@
 #include "obj.h"
 #include "renderer.h"
 #include "dxutils.h"
+#include "app.h"
 
 const wchar_t* mesh_resource_path = RESOURCE_DIR L"models";
 
@@ -114,9 +115,9 @@ void MeshInstance::render(RenderState rs) {
 		ViewCB view_cb_data {};
         view_cb_data.mvp = DirectX::XMMatrixMultiply(model, DirectX::XMMatrixMultiply(rs.view, rs.projection));
 		view_cb_data.screen_size = {640,480};
-		u64 ticks_ms = GetTickCount64();
-		float time = (float)ticks_ms / 1000.f;
-		view_cb_data.time = time;
+		//u64 ticks_ms = GetTickCount64();
+		//float time = (float)ticks_ms / 1000.f;
+		view_cb_data.time = time_elapsed;
 
 		//context->UpdateSubresource(view_cb, 0, 0, &mvp, sizeof(XMMATRIX), 0);
 		HRASSERT(context->Map(mesh->view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));

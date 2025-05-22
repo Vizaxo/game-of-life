@@ -79,7 +79,8 @@ HRESULT App::init(HINSTANCE hInstance, int width, int height) {
     return S_OK;
 }
 
-HRESULT App::update(float dt) {
+HRESULT App::update(float dt, float t) {
+    time_elapsed = t;
     return 0;
 }
 
