@@ -95,6 +95,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)/src;$(SolutionDir)external\DirectXTK\Inc;$(SolutionDir)external\OpenFBX\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4102</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -112,6 +113,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)/src;$(SolutionDir)external\DirectXTK\Inc;$(SolutionDir)external\OpenFBX\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4102</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,6 +132,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)/src;$(SolutionDir)external\DirectXTK\Inc;$(SolutionDir)external\OpenFBX\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4102</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,6 +151,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)/src;$(SolutionDir)external\DirectXTK\Inc;$(SolutionDir)external\OpenFBX\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4102</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
