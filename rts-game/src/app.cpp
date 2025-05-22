@@ -30,7 +30,7 @@ void App::register_window_class(HINSTANCE hInstance) {
 }
 
 void App::create_window(HINSTANCE hInstance, int width, int height) {
-    hwnd = CreateWindow(class_name, TEXT("RTS Game"), WS_SYSMENU, 0, 0, width, height, 0, 0, hInstance, NULL);
+    hwnd = CreateWindow(class_name, TEXT("Circle clicker"), WS_SYSMENU, 0, 0, width, height, 0, 0, hInstance, NULL);
     ShowWindow(hwnd, SW_SHOW);
     UpdateWindow(hwnd);
 }
