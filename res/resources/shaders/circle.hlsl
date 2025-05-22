@@ -13,6 +13,7 @@ cbuffer view_state : register(b0)
 	float4x4 mvp;
 	float2 screen_size;
 	float time;
+	float last_click_time;
 };
 
 v2p main_vs(in MeshVert vert) {

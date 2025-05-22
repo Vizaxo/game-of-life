@@ -11,6 +11,7 @@ struct ViewCB {
     XMMATRIX mvp;
     XMFLOAT2 screen_size;
     float time;
+    float last_click_time;
 };
 
 struct RenderState {

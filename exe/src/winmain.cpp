@@ -14,7 +14,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     LARGE_INTEGER qpc;
     QueryPerformanceFrequency(&qpc);
 
-    double frequency = (double)qpc.QuadPart;
+    float frequency = (float)qpc.QuadPart;
 
     QueryPerformanceCounter(&qpc);
     u64 start_time = qpc.QuadPart;
@@ -26,9 +26,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         } else {
             QueryPerformanceCounter(&qpc);
             u64 t = qpc.QuadPart;
-            double dt = (double)(t - last_frame_time) / frequency;
+            float dt = (float)(t - last_frame_time) / frequency;
 
-            app.update(dt, (double)(t - start_time) / frequency);
+            app.update(dt, (float)(t - start_time) / frequency);
             app.render();
             last_frame_time = t;
         }

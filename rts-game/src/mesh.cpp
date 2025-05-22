@@ -117,7 +117,8 @@ void MeshInstance::render(RenderState rs) {
 		view_cb_data.screen_size = {640,480};
 		//u64 ticks_ms = GetTickCount64();
 		//float time = (float)ticks_ms / 1000.f;
-		view_cb_data.time = (float)time_elapsed;
+		view_cb_data.time = time_elapsed;
+		view_cb_data.last_click_time = last_click_time;
 
 		//context->UpdateSubresource(view_cb, 0, 0, &mvp, sizeof(XMMATRIX), 0);
 		HRASSERT(context->Map(mesh->view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
