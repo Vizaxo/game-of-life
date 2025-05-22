@@ -17,3 +17,9 @@ using namespace DirectX;
 static constexpr float PI = 3.141592f;
 
 #include <memory>
+
+#if _DEBUG
+#define RESOURCE_DIR L"../res/resources/"
+#else
+#define RESOURCE_DIR L"resources/"
+#endif

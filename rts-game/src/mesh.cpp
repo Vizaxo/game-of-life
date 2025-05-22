@@ -5,7 +5,7 @@
 #include "renderer.h"
 #include "dxutils.h"
 
-const char* mesh_resource_path = "../resources/models";
+const wchar_t* mesh_resource_path = RESOURCE_DIR L"models";
 
 ID3D11VertexShader* Mesh::vs;
 ID3DBlob* Mesh::vs_bytecode;

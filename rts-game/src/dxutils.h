@@ -5,7 +5,7 @@
 #ifdef _TEST
 inline const wchar_t* SHADER_DIR = L"../rts-test/test/shaders";
 #else
-inline const wchar_t* SHADER_DIR = L"../rts-game/src/shaders"; // TODO: properly set this for packaged builds
+inline const wchar_t* SHADER_DIR = RESOURCE_DIR L"shaders";
 #endif
 
 enum class ShaderType {

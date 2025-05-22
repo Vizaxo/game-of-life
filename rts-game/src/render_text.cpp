@@ -9,7 +9,7 @@ std::unique_ptr<SpriteFont> debug_font;
 std::unique_ptr<SpriteBatch> sprite_batch;
 
 void load_font() {
-	debug_font = std::make_unique<SpriteFont>(device, L"../resources/fonts/courier.spritefont");
+	debug_font = std::make_unique<SpriteFont>(device, RESOURCE_DIR L"fonts/courier.spritefont");
 	sprite_batch = std::make_unique<SpriteBatch>(context);
 }
 
