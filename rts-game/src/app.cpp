@@ -4,17 +4,22 @@
 #include "dxutils.h"
 #include "mesh.h"
 
+App* app;
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
     case WM_CLOSE:
         PostQuitMessage(0);
         return 0;
+    case WM_LBUTTONDOWN:
+        app->left_mouse_clicked(lParam & 0xff, (lParam >> 16) & 0xff);
     }
 
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-void App::register_window_class(HINSTANCE hInstance) const {
+void App::register_window_class(HINSTANCE hInstance) {
+    app = this;
     WNDCLASS wc {};
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = WindowProc;
@@ -77,7 +82,7 @@ HRESULT App::update(float dt) {
 }
 
 HRESULT App::render() {
-    return ::render();
+    return ::render(*this);
 }
 
 HRESULT App::cleanup() {
@@ -86,4 +91,8 @@ HRESULT App::cleanup() {
 
 HRESULT App::quit() {
     return 0;
+}
+
+void App::left_mouse_clicked(u16 x, u16 y) {
+    ++score;
 }

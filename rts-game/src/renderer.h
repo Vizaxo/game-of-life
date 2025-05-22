@@ -19,5 +19,5 @@ struct RenderState {
 };
 
 
-HRESULT render();
+HRESULT render(App& app);
 void renderer_init(App &app);

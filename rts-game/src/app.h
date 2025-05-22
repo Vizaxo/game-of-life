@@ -11,12 +11,15 @@ struct App {
 
     const LPCWCHAR class_name = TEXT("D3DWND");
 
-    void register_window_class(HINSTANCE hInstance) const;
+    void register_window_class(HINSTANCE hInstance);
     void create_window(HINSTANCE hInstance, int width, int height);
     HRESULT create_device_and_swapchain(int width, int height);
+	void left_mouse_clicked(u16 x, u16 y);
 
     ID3D11Device* device = nullptr;
     ID3D11DeviceContext* context = nullptr;
     IDXGISwapChain* swapchain = nullptr;
     HWND hwnd;
+
+    u64 score = 0;
 };

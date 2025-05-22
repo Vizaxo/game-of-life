@@ -84,7 +84,7 @@ XMMATRIX setup_camera() {
 	return XMMatrixLookAtLH(cam_pos, look_at, world_up);
 }
 
-HRESULT render() {
+HRESULT render(App& app) {
 	RenderState rs;
 	rs.view = XMMatrixIdentity(); //setup_camera();
 	rs.projection = XMMatrixIdentity(); //XMMatrixPerspectiveFovLH(80, 4.f/3.f, 0.1f, 1000.f);
@@ -95,7 +95,9 @@ HRESULT render() {
 	context->OMSetRenderTargets(1, &backbuffer_rtv, nullptr);
 	// set depth stencil state
 
-	draw_debug_text(L"Hello, world");
+	wchar_t buf[1024];
+	swprintf(buf, 1024, L"%lld", app.score);
+	draw_debug_text(buf);
 	quad_mesh_instance->render(rs);
 
 	swapchain->Present(0, 0);
