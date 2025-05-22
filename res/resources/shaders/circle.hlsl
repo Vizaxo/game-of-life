@@ -28,7 +28,7 @@ v2p main_vs(in MeshVert vert) {
 }
 
 float4 main_ps(in v2p data) : SV_Target {
-	float4 color = float4(sin(time)/2.0+0.5, cos(time)/2.0+0.5, 0.0, 1.0);
+	float4 color = float4(sin(time)/2.0+0.5, cos(time)/2.0+0.5, sin(time / 3.f), 1.0);
 	float4 bg = float4(0.f, 0., 0., 0.0);
 
 	float2 uv = data.uv;
