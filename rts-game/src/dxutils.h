@@ -34,7 +34,6 @@ inline HRESULT compile_shader(LPCWSTR src_file, LPCSTR entrypoint, ShaderType ty
 recompile:
     HRESULT hr = D3DCompileFromFile(shader_path, nullptr, nullptr, entrypoint, target_str, compile_flags, 0, shader_blob, &error_blob);
     if (FAILED(hr)) {
-        // TODO: does this error output work?
         if (error_blob) {
 #if _DEBUG
             debug_print(LogLevel::PRINT, (LPCSTR)error_blob->GetBufferPointer());
