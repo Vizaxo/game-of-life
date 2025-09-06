@@ -3,6 +3,7 @@
 #include "renderer.h"
 #include "dxutils.h"
 #include "mesh.h"
+#include "game.h"
 
 App* app;
 
@@ -74,7 +75,7 @@ HRESULT App::init(HINSTANCE hInstance, int width, int height) {
 
     renderer_init(*this);
 
-    //Mesh train_mesh("train-diesel-a.fbx");
+    game_init();
 
     return S_OK;
 }

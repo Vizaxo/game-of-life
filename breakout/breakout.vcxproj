@@ -95,6 +95,7 @@
     <ClCompile Include="src\obj.cpp" />
     <ClCompile Include="src\renderer.cpp" />
     <ClCompile Include="src\render_text.cpp" />
+    <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -102,6 +103,7 @@
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\debug.h" />
     <ClInclude Include="src\dxutils.h" />
+    <ClInclude Include="src\game.h" />
     <ClInclude Include="src\intpoint.h" />
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\obj.h" />

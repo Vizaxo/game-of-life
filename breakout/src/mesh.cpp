@@ -41,7 +41,7 @@ void Mesh::static_init() {
     D3D11_RASTERIZER_DESC rs_desc {};
     rs_desc.FillMode = D3D11_FILL_SOLID;
     rs_desc.CullMode = D3D11_CULL_BACK;
-    rs_desc.FrontCounterClockwise = false;
+    rs_desc.FrontCounterClockwise = true;
     rs_desc.DepthBias = 0;
     rs_desc.DepthBiasClamp = 0;
     rs_desc.SlopeScaledDepthBias = 0;
@@ -96,7 +96,7 @@ HRESULT Mesh::load(const char* name, MeshData& mesh_data) {
 	return S_OK;
 }
 
-void MeshInstance::render(RenderState rs) {
+void MeshInstance::render(RenderState rs)
 {
     context->IASetInputLayout(mesh->input_layout);
     u32 stride = sizeof(MeshVert);
@@ -137,4 +137,4 @@ void MeshInstance::render(RenderState rs) {
     context->DrawIndexed(mesh->num_indices, 0, 0);
 }
 
-}
+std::unique_ptr<Mesh> quad_mesh;

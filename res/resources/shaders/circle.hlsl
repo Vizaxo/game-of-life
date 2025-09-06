@@ -23,40 +23,11 @@ v2p main_vs(in MeshVert vert) {
 
 	float aspect = screen_size.x / screen_size.y;
 
-	float2 pos = vert.pos * 2.0 - 1.0;
-	pos.x /= aspect;
-	ret.pos = float4(pos, 0.f, 1.f);
+	ret.pos = mul(mvp, float4(vert.pos, 0.0, 1.0));
 	ret.uv = vert.uv;
 	return ret;
 }
 
 float4 main_ps(in v2p data) : SV_Target {
-	float4 color = float4(sin(time)/2.0+0.5, cos(time)/2.0+0.5, sin(time / 3.f), 1.0);
-	float4 bg = float4(0.f, 0., 0., 0.0);
-
-	float2 uv = data.uv;
-	uv *= 2.;
-	uv -= 1.;
-	float x = uv.x;
-	float y = uv.y;
-
-	float h = sqrt(x*x + y*y);
-	float theta = sin(uv.x/h);
-
-	float t = time;
-	t *= 2.f;
-
-	float r = sin(t + 2.*theta)/2.0 + 0.5;
-
-	float last_click_factor = 1. - clamp((time - last_click_time) / .3, 0., 1.);
-	r = 0.3 + 0.1*r;
-
-	r *= (1 - .2 * last_click_factor);
-
-	r *= clamp((float)(num_clicks_low+1) / (float) 100., 0., 1.);
-
-	if (uv.x*uv.x + uv.y*uv.y < r)
-		return color;
-	else
-		return bg;
+	return float4(data.uv, 0.0, 1.0);
 }

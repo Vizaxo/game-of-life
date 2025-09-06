@@ -6,13 +6,12 @@
 #include "app.h"
 #include "render_text.h"
 #include "mesh.h"
+#include "game.h"
 
 ID3D11Device* device;
 ID3D11DeviceContext* context;
 IDXGISwapChain* swapchain;
 ID3D11RenderTargetView* backbuffer_rtv;
-std::unique_ptr<Mesh> quad_mesh;
-std::unique_ptr<MeshInstance> quad_mesh_instance;
 
 Microsoft::WRL::Wrappers::RoInitializeWrapper* initialize;
 
@@ -56,7 +55,6 @@ void renderer_init(App &app) {
 	Mesh::static_init();
 	quad_mesh = std::make_unique<Mesh>();
 	quad_mesh->load("quad", quad_mesh_data);
-	quad_mesh_instance = std::make_unique<MeshInstance>(quad_mesh.get(), XMFLOAT3({0, 0, 0}));
 }
 
 void set_viewport() {
@@ -73,11 +71,11 @@ void set_viewport() {
 XMMATRIX setup_camera() {
 	//XMVECTOR cam_pos = DirectX::XMVectorSet(70.f, 50.f, 50.f, 1.f);
 	//XMVECTOR look_at = DirectX::XMVectorSet(71.f, 50.f, 0.f, 1.f);
-	XMVECTOR cam_pos = DirectX::XMVectorSet(1.f, 1.f, 1.f, 1.f);
+	XMVECTOR cam_pos = DirectX::XMVectorSet(0.f, 0.f, 1000.f, 1.f);
 	XMVECTOR look_at = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 	XMVECTOR cam_dir = DirectX::XMVectorSubtract(look_at, cam_pos);
 
-	XMVECTOR world_up = DirectX::XMVectorSet(0.f, 0.f, 1.f, 1.f);
+	XMVECTOR world_up = DirectX::XMVectorSet(0.f, 1.f, 0.f, 1.f);
 	XMVECTOR cam_right = DirectX::XMVector4Normalize(DirectX::XMVector3Cross(cam_dir, world_up));
 	XMVECTOR cam_up = DirectX::XMVector3Cross(cam_right, cam_dir);
 
@@ -86,8 +84,9 @@ XMMATRIX setup_camera() {
 
 HRESULT render(App& app) {
 	RenderState rs;
-	rs.view = XMMatrixIdentity(); //setup_camera();
+	rs.view = setup_camera();
 	rs.projection = XMMatrixIdentity(); //XMMatrixPerspectiveFovLH(80, 4.f/3.f, 0.1f, 1000.f);
+	rs.projection = XMMatrixOrthographicLH(640, 480, -10, 10);
 
 	context->ClearRenderTargetView(backbuffer_rtv, Colors::Aqua);
 
@@ -98,7 +97,11 @@ HRESULT render(App& app) {
 	wchar_t buf[1024];
 	swprintf(buf, 1024, L"%lld", score);
 	draw_text(buf, Colors::Red);
-	quad_mesh_instance->render(rs);
+
+	for (Block& block : blocks) {
+		//block.mesh_instance.set_shader_parameter(SP::Color, block.color);
+		block.mesh_instance.render(rs);
+	}
 
 	swapchain->Present(0, 0);
 

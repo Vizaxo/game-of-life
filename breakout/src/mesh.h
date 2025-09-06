@@ -60,3 +60,5 @@ struct MeshInstance {
     XMFLOAT3 rot = {0.f, 0.f, 0.f};
     XMFLOAT3 scale = {1.f, 1.f, 1.f};
 };
+
+extern std::unique_ptr<Mesh> quad_mesh;
