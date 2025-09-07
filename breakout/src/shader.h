@@ -88,12 +88,25 @@ struct ConstantBuffers<CB, CBs...> : ConstantBuffers<CBs...> {
 
         return S_OK;
     }
+
+    template <typename T> HRESULT set(ID3D11DeviceContext* context, T& data) { return ConstantBuffers<CBs>::set(context, data); }
+    template <> HRESULT set<CB>(ID3D11DeviceContext* context, CB& data) {
+        D3D11_MAPPED_SUBRESOURCE subresource {};
+		HRASSERT(context->Map(cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
+        memcpy(subresource.pData, &data, sizeof(CB));
+        context->Unmap(cb, 0);
+		context->VSSetConstantBuffers(0, 1, &cb);
+		context->PSSetConstantBuffers(0, 1, &cb);
+
+        return S_OK;
+    }
 };
 
 template <ShaderStage stage, LPCWSTR filename, LPCSTR entrypoint, typename... CBs>
 struct ShaderC : ShaderB<stage, filename, entrypoint> {
     ConstantBuffers<CBs...> cbs;
     template <typename T> T& get() { return cbs.get<T>(); }
+    template <typename T> HRESULT set(ID3D11DeviceContext* context, T& data) { return cbs.set<T>(context, data); }
 
     virtual HRESULT init(ID3D11Device* device) {
         ShaderB<stage, filename, entrypoint>::init(device);

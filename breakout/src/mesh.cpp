@@ -111,15 +111,7 @@ void MeshInstance::render(RenderState rs)
 		view_cb_data.num_clicks_low = score & 0xffffffff;
 		view_cb_data.num_clicks_high = (score >> 32) & 0xffffffff;
 
-		//context->UpdateSubresource(view_cb, 0, 0, &mvp, sizeof(XMMATRIX), 0);
-		/*
-		TODO: set CB data
-		HRASSERT(context->Map(mesh->view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
-        memcpy(subresource.pData, &view_cb_data, sizeof(ViewCB));
-        context->Unmap(mesh->view_cb, 0);
-		context->VSSetConstantBuffers(0, 1, &mesh->view_cb);
-		context->PSSetConstantBuffers(0, 1, &mesh->view_cb);
-		*/
+		circle_vs.set<ViewCB>(context, view_cb_data);
     }
 
     context->RSSetState(mesh->rasterizer_state);
