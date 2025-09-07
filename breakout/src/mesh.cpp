@@ -5,38 +5,27 @@
 #include "renderer.h"
 #include "dxutils.h"
 #include "app.h"
+#include "shader_library.h"
 
 const wchar_t* mesh_resource_path = RESOURCE_DIR L"models";
 
-ID3D11VertexShader* Mesh::vs;
-ID3DBlob* Mesh::vs_bytecode;
-ID3D11PixelShader* Mesh::ps;
-ID3D11InputLayout* Mesh::input_layout;
-ID3D11Buffer* Mesh::view_cb;
 ID3D11RasterizerState* Mesh::rasterizer_state;
 
 Mesh::Mesh() {
-}
-
-void Mesh::static_init() {
-    D3D11_BUFFER_DESC view_cb_desc {};
-    view_cb_desc.ByteWidth = sizeof(ViewCB);
-    view_cb_desc.Usage = D3D11_USAGE_DYNAMIC;
-    view_cb_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    view_cb_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    view_cb_desc.MiscFlags = 0;
-
-    HRASSERT(device->CreateBuffer(&view_cb_desc, nullptr, &view_cb));
-
-    compile_vertex_shader(device, L"circle.hlsl", "main_vs", &vs, &vs_bytecode);
-    compile_pixel_shader(device, L"circle.hlsl", "main_ps", &ps);
+	vs = &circle_vs;
+	ps = &circle_ps;
 
     D3D11_INPUT_ELEMENT_DESC input_layout_desc[] = {
         {"SV_POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
         {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
-    HRASSERT(device->CreateInputLayout(input_layout_desc, NUM_ELEMENTS(input_layout_desc), Mesh::vs_bytecode->GetBufferPointer(), Mesh::vs_bytecode->GetBufferSize(), &input_layout));
+    HRASSERT(device->CreateInputLayout(input_layout_desc, NUM_ELEMENTS(input_layout_desc), circle_vs.vs_bytecode->GetBufferPointer(), circle_vs.vs_bytecode->GetBufferSize(), &input_layout));
     assert(input_layout);
+}
+
+void Mesh::static_init() {
+
+    //HRASSERT(device->CreateBuffer(&view_cb_desc, nullptr, &view_cb));
 
     D3D11_RASTERIZER_DESC rs_desc {};
     rs_desc.FillMode = D3D11_FILL_SOLID;
@@ -104,7 +93,7 @@ void MeshInstance::render(RenderState rs)
     context->IASetVertexBuffers(0, 1, &mesh->vb, &stride, &offset);
     context->IASetIndexBuffer(mesh->ib, DXGI_FORMAT_R32_UINT, 0);
 
-    context->VSSetShader(mesh->vs, nullptr, 0);
+	mesh->vs->set_shader(context);
 	{
         D3D11_MAPPED_SUBRESOURCE subresource {};
 		XMMATRIX model = DirectX::XMMatrixIdentity();
@@ -123,16 +112,19 @@ void MeshInstance::render(RenderState rs)
 		view_cb_data.num_clicks_high = (score >> 32) & 0xffffffff;
 
 		//context->UpdateSubresource(view_cb, 0, 0, &mvp, sizeof(XMMATRIX), 0);
+		/*
+		TODO: set CB data
 		HRASSERT(context->Map(mesh->view_cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
         memcpy(subresource.pData, &view_cb_data, sizeof(ViewCB));
         context->Unmap(mesh->view_cb, 0);
 		context->VSSetConstantBuffers(0, 1, &mesh->view_cb);
 		context->PSSetConstantBuffers(0, 1, &mesh->view_cb);
+		*/
     }
 
     context->RSSetState(mesh->rasterizer_state);
 
-    context->PSSetShader(mesh->ps, nullptr, 0);
+	mesh->ps->set_shader(context);
 
     context->DrawIndexed(mesh->num_indices, 0, 0);
 }

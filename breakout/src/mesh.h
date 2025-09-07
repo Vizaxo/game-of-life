@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "renderer.h"
+#include "shader.h"
 #include <vector>
 
 struct MeshVert {
@@ -42,11 +43,10 @@ private:
     ID3D11Buffer* vb;
     ID3D11Buffer* ib;
 
-    static ID3D11VertexShader* vs;
-    static ID3DBlob* vs_bytecode;
-    static ID3D11PixelShader* ps;
-    static ID3D11Buffer* view_cb;
-    static ID3D11InputLayout* input_layout;
+    struct Shader* vs;
+    struct Shader* ps;
+    ID3D11InputLayout* input_layout;
+
 	static ID3D11RasterizerState* rasterizer_state;
 
     std::vector<ID3D11ShaderResourceView*> textures;

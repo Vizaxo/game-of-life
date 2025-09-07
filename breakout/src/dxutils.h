@@ -1,3 +1,5 @@
+#pragma once
+
 #include <D3D11.h>
 #include <d3dcompiler.h>
 #include "common.h"

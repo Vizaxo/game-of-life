@@ -29,10 +29,5 @@ v2p main_vs(in MeshVert vert) {
 }
 
 float4 main_ps(in v2p data) : SV_Target {
-	float2 uv = data.uv - 0.5;
-	uv *= 2.0;
-	if (uv.x*uv.x + uv.y*uv.y <= 1.0)
-		return float4(uv, 0.0, 1.0);
-	else
-		return float4(0.0, 0.0, 0.0, 0.0);
+	return float4(data.uv, 0.0, 1.0);
 }

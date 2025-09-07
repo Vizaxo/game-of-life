@@ -8,6 +8,9 @@
 #include "mesh.h"
 #include "game.h"
 
+#include "shader.h"
+#include "shader_library.h"
+
 ID3D11Device* device;
 ID3D11DeviceContext* context;
 IDXGISwapChain* swapchain;
@@ -51,6 +54,8 @@ void renderer_init(App &app) {
 #endif
 
 	backbuffer_rtv = get_backbuffer_rtv();
+
+	init_shader_library(device);
 
 	Mesh::static_init();
 	quad_mesh = std::make_unique<Mesh>();
