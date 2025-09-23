@@ -98,6 +98,7 @@
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\shader_library.cpp" />
+    <ClCompile Include="src\simulation.cpp" />
     <ClCompile Include="src\winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +115,7 @@
     <ClInclude Include="src\render_text.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\shader_library.h" />
+    <ClInclude Include="src\simulation.h" />
     <ClInclude Include="src\types.h" />
   </ItemGroup>
   <ItemGroup>

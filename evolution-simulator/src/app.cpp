@@ -75,13 +75,14 @@ HRESULT App::init(HINSTANCE hInstance, int width, int height) {
 
     renderer_init(*this);
 
-    game_init();
+    init_game();
 
     return S_OK;
 }
 
 HRESULT App::update(float dt, float t) {
     time_elapsed = t;
+    tick_game(dt);
     return 0;
 }
 

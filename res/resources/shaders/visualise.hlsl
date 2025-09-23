@@ -15,6 +15,18 @@ cbuffer view_state : register(b0)
 	float time;
 };
 
+struct CellData {
+	float4 colour;
+};
+
+StructuredBuffer<CellData> cells;
+
+cbuffer sim_state : register(b1)
+{
+	uint width;
+	uint height;
+}
+
 v2p main_vs(in MeshVert vert) {
 	v2p ret;
 
@@ -26,5 +38,6 @@ v2p main_vs(in MeshVert vert) {
 }
 
 float4 main_ps(in v2p data) : SV_Target {
+	return cells[0].colour;
 	return float4(data.uv, 0.0, 1.0);
 }

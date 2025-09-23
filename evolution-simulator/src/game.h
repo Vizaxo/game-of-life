@@ -5,4 +5,5 @@
 #include "common.h"
 #include "mesh.h"
 
-void game_init();
+void init_game();
+void tick_game(float dt);
