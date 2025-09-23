@@ -17,6 +17,10 @@ struct CellData {
 	XMFLOAT4 color;
 };
 
+struct SimCellData {
+	bool enabled;
+};
+
 extern CellData cells[cells_width*cells_height];
 
 void init_sim();
