@@ -38,6 +38,11 @@ v2p main_vs(in MeshVert vert) {
 }
 
 float4 main_ps(in v2p data) : SV_Target {
-	return cells[0].colour;
+	float2 cell_index = data.uv * float2(width, height);
+	int2 cell_index_int = floor(cell_index);
+	cell_index_int.x = min(cell_index_int.x, width);
+	cell_index_int.y = min(cell_index_int.y, height);
+
+	return cells[cell_index_int.x + cell_index_int.y * width].colour;
 	return float4(data.uv, 0.0, 1.0);
 }

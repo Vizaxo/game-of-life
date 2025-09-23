@@ -2,8 +2,8 @@
 
 #include "common.h"
 
-constexpr u32 cells_width = 100;
-constexpr u32 cells_height = 100;
+constexpr u32 cells_width = 10;
+constexpr u32 cells_height = 10;
 
 struct SimState {
 	u32 width = cells_width;
