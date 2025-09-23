@@ -10,6 +10,7 @@
 
 #include "shader.h"
 #include "shader_library.h"
+#include "constant_buffer.h"
 
 ID3D11Device* device;
 ID3D11DeviceContext* context;
@@ -17,6 +18,10 @@ IDXGISwapChain* swapchain;
 ID3D11RenderTargetView* backbuffer_rtv;
 
 Microsoft::WRL::Wrappers::RoInitializeWrapper* initialize;
+
+std::unique_ptr<MeshInstance> screen_quad;
+
+std::unique_ptr<ConstantBuffer<ViewCB>> view_cb;
 
 ID3D11RenderTargetView* get_backbuffer_rtv() {
 	DXGI_SWAP_CHAIN_DESC sc_desc;
@@ -58,8 +63,12 @@ void renderer_init(App &app) {
 	init_shader_library(device);
 
 	Mesh::static_init();
-	quad_mesh = std::make_unique<Mesh>();
+	quad_mesh = std::make_unique<Mesh>(visualise_vs, visualise_ps);
 	quad_mesh->load("quad", quad_mesh_data);
+	 
+	screen_quad = std::make_unique<MeshInstance>(quad_mesh.get(), XMFLOAT3(0., 0., 0.));
+	
+	view_cb = std::make_unique<ConstantBuffer<ViewCB>>(create_constant_buffer<ViewCB>(device));
 }
 
 void set_viewport() {
@@ -87,6 +96,24 @@ XMMATRIX setup_camera() {
 	return XMMatrixLookAtLH(cam_pos, look_at, world_up);
 }
 
+void set_view_cb(ID3D11DeviceContext* context, RenderState& rs) {
+		XMMATRIX model = DirectX::XMMatrixIdentity();
+		/*
+		TODO: model matrix?
+        model = 
+			DirectX::XMMatrixMultiply(DirectX::XMMatrixScaling(scale.x,scale.y,scale.z), 
+			DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z), 
+			DirectX::XMMatrixTranslation((float)position.x, (float)position.y, 0)));
+			*/
+		ViewCB view_cb_data {};
+        view_cb_data.mvp = DirectX::XMMatrixMultiply(model, DirectX::XMMatrixMultiply(rs.view, rs.projection));
+		view_cb_data.screen_size = {640,480};
+		view_cb_data.time = time_elapsed;
+
+		set_cb(context, *view_cb, &view_cb_data);
+}
+
+
 HRESULT render(App& app) {
 	RenderState rs;
 	rs.view = setup_camera();
@@ -99,14 +126,15 @@ HRESULT render(App& app) {
 	context->OMSetRenderTargets(1, &backbuffer_rtv, nullptr);
 	// set depth stencil state
 
+	set_view_cb(context, rs);
+	bind_cb(context, *view_cb, 0);
+
 	wchar_t buf[1024];
 	swprintf(buf, 1024, L"%lld", score);
-	draw_text(buf, Colors::Red);
+	//draw_text(buf, Colors::Red);
 
-	for (Block& block : blocks) {
-		//block.mesh_instance.set_shader_parameter(SP::Color, block.color);
-		block.mesh_instance.render(rs);
-	}
+
+	render_mesh(*screen_quad, rs);
 
 	swapchain->Present(0, 0);
 

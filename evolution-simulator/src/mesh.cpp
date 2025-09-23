@@ -11,15 +11,15 @@ const wchar_t* mesh_resource_path = RESOURCE_DIR L"models";
 
 ID3D11RasterizerState* Mesh::rasterizer_state;
 
-Mesh::Mesh() {
-	vs = &circle_vs;
-	ps = &circle_ps;
+Mesh::Mesh(Shader& vs, Shader& ps) {
+	this->vs = &vs;
+	this->ps = &ps;
 
     D3D11_INPUT_ELEMENT_DESC input_layout_desc[] = {
         {"SV_POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
         {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
-    HRASSERT(device->CreateInputLayout(input_layout_desc, NUM_ELEMENTS(input_layout_desc), circle_vs.vs_bytecode->GetBufferPointer(), circle_vs.vs_bytecode->GetBufferSize(), &input_layout));
+    HRASSERT(device->CreateInputLayout(input_layout_desc, NUM_ELEMENTS(input_layout_desc), vs.vs_bytecode->GetBufferPointer(), vs.vs_bytecode->GetBufferSize(), &input_layout));
     assert(input_layout);
 }
 
@@ -85,38 +85,20 @@ HRESULT Mesh::load(const char* name, MeshData& mesh_data) {
 	return S_OK;
 }
 
-void MeshInstance::render(RenderState rs)
+void render_mesh(MeshInstance& mi, RenderState& rs)
 {
+	Mesh* mesh = mi.mesh;
     context->IASetInputLayout(mesh->input_layout);
     u32 stride = sizeof(MeshVert);
     u32 offset = 0;
     context->IASetVertexBuffers(0, 1, &mesh->vb, &stride, &offset);
     context->IASetIndexBuffer(mesh->ib, DXGI_FORMAT_R32_UINT, 0);
 
-	mesh->vs->set_shader(context);
-	{
-        D3D11_MAPPED_SUBRESOURCE subresource {};
-		XMMATRIX model = DirectX::XMMatrixIdentity();
-        model = 
-			DirectX::XMMatrixMultiply(DirectX::XMMatrixScaling(scale.x,scale.y,scale.z), 
-			DirectX::XMMatrixMultiply(DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z), 
-			DirectX::XMMatrixTranslation((float)position.x, (float)position.y, 0)));
-		ViewCB view_cb_data {};
-        view_cb_data.mvp = DirectX::XMMatrixMultiply(model, DirectX::XMMatrixMultiply(rs.view, rs.projection));
-		view_cb_data.screen_size = {640,480};
-		//u64 ticks_ms = GetTickCount64();
-		//float time = (float)ticks_ms / 1000.f;
-		view_cb_data.time = time_elapsed;
-		view_cb_data.last_click_time = last_click_time;
-		view_cb_data.num_clicks_low = score & 0xffffffff;
-		view_cb_data.num_clicks_high = (score >> 32) & 0xffffffff;
-
-		circle_vs.set<ViewCB>(context, view_cb_data);
-    }
+	context->VSSetShader(mesh->vs->vs, nullptr, 0);
 
     context->RSSetState(mesh->rasterizer_state);
 
-	mesh->ps->set_shader(context);
+	context->PSSetShader(mesh->ps->ps, nullptr, 0);
 
     context->DrawIndexed(mesh->num_indices, 0, 0);
 }

@@ -13,9 +13,6 @@ cbuffer view_state : register(b0)
 	float4x4 mvp;
 	float2 screen_size;
 	float time;
-	float last_click_time;
-	uint num_clicks_low;
-	uint num_clicks_high;
 };
 
 v2p main_vs(in MeshVert vert) {
@@ -23,7 +20,7 @@ v2p main_vs(in MeshVert vert) {
 
 	float aspect = screen_size.x / screen_size.y;
 
-	ret.pos = mul(mvp, float4(vert.pos, 0.0, 1.0));
+	ret.pos = mul(mvp, float4((vert.pos - float2(0.5, 0.5)) * screen_size, 0.0, 1.0));
 	ret.uv = vert.uv;
 	return ret;
 }

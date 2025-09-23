@@ -32,19 +32,18 @@ inline MeshData quad_mesh_data = {
 class Mesh {
     friend struct MeshInstance;
 public:
-	Mesh();
+	Mesh(Shader& vs, Shader& ps);
 	HRESULT load(const char* name, MeshData& mesh_data);
 	void release();
     static void static_init();
 
-private:
     int num_vertices;
     int num_indices;
     ID3D11Buffer* vb;
     ID3D11Buffer* ib;
 
-    struct Shader* vs;
-    struct Shader* ps;
+    Shader* vs;
+    Shader* ps;
     ID3D11InputLayout* input_layout;
 
 	static ID3D11RasterizerState* rasterizer_state;
@@ -53,7 +52,6 @@ private:
 };
 
 struct MeshInstance {
-	void render(RenderState rs);
     MeshInstance(Mesh* mesh, XMFLOAT3 pos) : mesh(mesh), position(pos) {}
     Mesh* mesh;
     XMFLOAT3 position;
@@ -62,3 +60,7 @@ struct MeshInstance {
 };
 
 extern std::unique_ptr<Mesh> quad_mesh;
+
+void render_mesh(MeshInstance& mi, RenderState& rs);
+
+void set_view_cb(RenderState rs);
