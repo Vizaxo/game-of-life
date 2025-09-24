@@ -21,3 +21,4 @@ struct RenderState {
 
 HRESULT render(App& app);
 void renderer_init(App &app);
+void renderer_shutdown();

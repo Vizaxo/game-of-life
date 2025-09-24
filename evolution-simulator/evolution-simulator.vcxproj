@@ -57,7 +57,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)/src;$(SolutionDir)external\DirectXTK\Inc;$(SolutionDir)external\OpenFBX\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/src;$(SolutionDir)external\DirectXTK\Inc;$(SolutionDir)external\OpenFBX\src;$(SolutionDir)external\imgui</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4102</DisableSpecificWarnings>
@@ -76,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)/src;$(SolutionDir)external\DirectXTK\Inc;$(SolutionDir)external\OpenFBX\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/src;$(SolutionDir)external\DirectXTK\Inc;$(SolutionDir)external\OpenFBX\src;$(SolutionDir)external\imgui</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4102</DisableSpecificWarnings>
@@ -90,6 +90,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\external\imgui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\external\imgui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\external\imgui\imgui.cpp" />
+    <ClCompile Include="..\external\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\external\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\external\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\app.cpp" />
     <ClCompile Include="src\mesh.cpp" />
     <ClCompile Include="src\obj.cpp" />

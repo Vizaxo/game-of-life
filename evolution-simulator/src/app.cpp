@@ -4,10 +4,16 @@
 #include "dxutils.h"
 #include "mesh.h"
 #include "game.h"
+#include "imgui.h"
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 App* app;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam))
+        return true;
+
     switch (msg) {
     case WM_CLOSE:
         PostQuitMessage(0);
@@ -91,6 +97,7 @@ HRESULT App::render() {
 }
 
 HRESULT App::cleanup() {
+    renderer_shutdown();
     return 0;
 }
 

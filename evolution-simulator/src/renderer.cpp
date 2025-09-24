@@ -7,6 +7,9 @@
 #include "render_text.h"
 #include "mesh.h"
 #include "game.h"
+#include "imgui.h"
+#include "backends/imgui_impl_dx11.h"
+#include "backends/imgui_impl_win32.h"
 
 #include "shader.h"
 #include "shader_library.h"
@@ -64,6 +67,10 @@ void renderer_init(App &app) {
 #endif
 
 	backbuffer_rtv = get_backbuffer_rtv();
+
+	ImGui::CreateContext();
+	ImGui_ImplWin32_Init(app.hwnd);
+	ImGui_ImplDX11_Init(device, context);
 
 	init_shader_library(device);
 
@@ -142,6 +149,11 @@ void set_cells_buffer(ID3D11DeviceContext* context) {
 }
 
 HRESULT render(App& app) {
+	ImGui_ImplWin32_NewFrame();
+	ImGui_ImplDX11_NewFrame();
+	ImGui::NewFrame();
+	ImGui::ShowDemoWindow();
+
 	RenderState rs;
 	rs.view = setup_camera();
 	rs.projection = XMMatrixIdentity(); //XMMatrixPerspectiveFovLH(80, 4.f/3.f, 0.1f, 1000.f);
@@ -163,7 +175,16 @@ HRESULT render(App& app) {
 
 	render_mesh(*screen_quad, rs);
 
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 	swapchain->Present(0, 0);
 
 	return S_OK;
+}
+
+void renderer_shutdown() {
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 }
