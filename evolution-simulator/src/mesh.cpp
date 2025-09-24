@@ -93,6 +93,7 @@ void render_mesh(MeshInstance& mi, RenderState& rs)
     u32 offset = 0;
     context->IASetVertexBuffers(0, 1, &mesh->vb, &stride, &offset);
     context->IASetIndexBuffer(mesh->ib, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	context->VSSetShader(mesh->vs->vs, nullptr, 0);
 

@@ -2,8 +2,8 @@
 
 #include "common.h"
 
-constexpr u32 cells_width = 10;
-constexpr u32 cells_height = 10;
+constexpr u32 cells_width = 80;
+constexpr u32 cells_height = 60;
 
 struct SimState {
 	u32 width = cells_width;
@@ -18,7 +18,12 @@ struct CellData {
 };
 
 struct SimCellData {
-	bool enabled;
+	struct Data {
+		bool enabled;
+	};
+
+	// double-buffer the data
+	Data data[2];
 };
 
 extern CellData cells[cells_width*cells_height];
