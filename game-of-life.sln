@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "external", "external", "{96
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "res", "res\res.vcxproj", "{624539F1-7A05-43A7-BEEE-9681569CDB30}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "evolution-simulator", "evolution-simulator\evolution-simulator.vcxproj", "{C58E63CC-EE13-4F1B-8401-DE9AE486FC8E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game-of-life", "game-of-life\game-of-life.vcxproj", "{C58E63CC-EE13-4F1B-8401-DE9AE486FC8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
