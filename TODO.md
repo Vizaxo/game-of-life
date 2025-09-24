@@ -5,6 +5,8 @@
 - [x] Simulate game of life
 
 ## Near goals
+- [ ] Add readme
+- [ ] Add screenshots to readme
 - [ ] Sliders for adjusting width/height
 - [ ] Allow toggling wrap-around
 - [ ] Button to play/pause the simulation
