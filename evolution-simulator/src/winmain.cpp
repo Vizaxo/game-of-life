@@ -5,7 +5,7 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     App app;
 
-    if (FAILED(app.init(hInstance, 640, 480)))
+    if (FAILED(app.init(hInstance, 1920, 1080)))
         return 0;
 
     MSG msg;

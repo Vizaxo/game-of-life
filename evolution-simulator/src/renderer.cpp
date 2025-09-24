@@ -95,8 +95,8 @@ void set_viewport() {
 	D3D11_VIEWPORT viewport;
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = 640;
-	viewport.Height = 480;
+	viewport.Width = 1920;
+	viewport.Height = 1080;
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 	context->RSSetViewports(1, &viewport);
@@ -127,7 +127,7 @@ void set_view_cb(ID3D11DeviceContext* context, RenderState& rs) {
 		*/
 	ViewCB view_cb_data{};
 	view_cb_data.mvp = DirectX::XMMatrixMultiply(model, DirectX::XMMatrixMultiply(rs.view, rs.projection));
-	view_cb_data.screen_size = { 640,480 };
+	view_cb_data.screen_size = { 1920,1080 };
 	view_cb_data.time = time_elapsed;
 
 	set_cb(context, *view_cb, &view_cb_data);

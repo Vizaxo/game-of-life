@@ -32,7 +32,8 @@ v2p main_vs(in MeshVert vert) {
 
 	float aspect = screen_size.x / screen_size.y;
 
-	ret.pos = mul(mvp, float4((vert.pos - float2(0.5, 0.5)) * screen_size, 0.0, 1.0));
+	//ret.pos = mul(mvp, float4((vert.pos - float2(0.5, 0.5)) * screen_size, 0.0, 1.0));
+	ret.pos = float4((vert.pos - float2(0.5, 0.5)) * float2(2.0, 2.0), 0.0, 1.0);
 	ret.uv = vert.uv;
 	return ret;
 }

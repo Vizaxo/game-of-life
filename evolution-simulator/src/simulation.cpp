@@ -33,15 +33,15 @@ void init_sim() {
 	}
 
 	// glider
-	get_cell(5, 5, true).enabled = true;
-	get_cell(5, 6, true).enabled = true;
-	get_cell(5, 7, true).enabled = true;
-	get_cell(6, 5, true).enabled = true;
-	get_cell(7, 6, true).enabled = true;
+	get_cell(-37, 5, true).enabled = true;
+	get_cell(-37, 6, true).enabled = true;
+	get_cell(-37, 7, true).enabled = true;
+	get_cell(-36, 5, true).enabled = true;
+	get_cell(-35, 6, true).enabled = true;
 
-	get_cell(26, 6, true).enabled = true;
-	get_cell(26, 7, true).enabled = true;
-	get_cell(26, 8, true).enabled = true;
+	get_cell(306, 250, true).enabled = true;
+	get_cell(306, 251, true).enabled = true;
+	get_cell(306, 252, true).enabled = true;
 	render_colours();
 }
 
@@ -68,7 +68,12 @@ void tick_sim(float dt) {
 	static float acc_time = 0.;
 	acc_time += dt;
 
-	const float tick_delay = 0.03f;
+	static bool started = false;
+	if (!started && acc_time < 5.f)
+		return;
+	started = true;
+
+	const float tick_delay = 0.003f;
 	if (acc_time > tick_delay) {
 		acc_time = acc_time - tick_delay;
 		++sim_state.ticks;

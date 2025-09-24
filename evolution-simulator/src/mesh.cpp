@@ -30,7 +30,7 @@ void Mesh::static_init() {
     D3D11_RASTERIZER_DESC rs_desc {};
     rs_desc.FillMode = D3D11_FILL_SOLID;
     rs_desc.CullMode = D3D11_CULL_BACK;
-    rs_desc.FrontCounterClockwise = true;
+    rs_desc.FrontCounterClockwise = false;
     rs_desc.DepthBias = 0;
     rs_desc.DepthBiasClamp = 0;
     rs_desc.SlopeScaledDepthBias = 0;

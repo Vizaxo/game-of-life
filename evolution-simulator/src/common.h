@@ -16,7 +16,7 @@ static constexpr float PI = 3.141592f;
 #if _DEBUG
 #define RESOURCE_DIR L"../res/resources/"
 #else
-#define RESOURCE_DIR L"resources/"
+#define RESOURCE_DIR L"../res/resources/"
 #endif
 
 #include "assert.h"
